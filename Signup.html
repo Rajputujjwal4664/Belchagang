@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Baalu Mafia - Sign Up</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- ✅ Correct Firebase CDN -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-compat.js"></script>
+
+  <!-- ✅ Your Firebase config file -->
+  <script src="firebase-config.js" defer></script>
+
+  <!-- ✅ Your custom JS (signup logic) -->
+  <script src="signup.js" defer></script>
+</head>
+<body>
+  <div class="login-box">
+    <h2>🚜 Create New Account</h2>
+    <input type="text" id="username" placeholder="👤 Username">
+    <input type="password" id="password" placeholder="🔒 Password">
+    <input type="password" id="confirmPassword" placeholder="✅ Confirm Password">
+    <button onclick="signup()">🚧 Create Account</button>
+    <p>Already a member? <a href="index.html">Login here</a></p>
+  </div>
+</body>
+</html>

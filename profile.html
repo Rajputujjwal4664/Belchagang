@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Your Profile</title>
+<style> 
+.back-button {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #222;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+}
+
+.back-button:hover {
+  background-color: crimson;
+  color: #000;
+  transform: scale(1.05);
+  box-shadow: 3px 3px 10px rgba(0,0,0,0.7);
+}
+</style>
+  <style>
+    body {
+      background-color: #121212;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      padding: 30px;
+    }
+
+    .profile-box {
+      background: #1f1f1f;
+      padding: 30px;
+      max-width: 400px;
+      margin: auto;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(255,255,255,0.1);
+    }
+
+    .profile-box img {
+      border-radius: 50%;
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      margin-bottom: 15px;
+    }
+
+    input {
+      padding: 10px;
+      margin: 10px 0;
+      width: 80%;
+      border-radius: 8px;
+      border: none;
+      background-color: #333;
+      color: white;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #ff3c3c;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #e60000;
+    }
+
+    .field-label {
+      font-weight: bold;
+      margin-top: 15px;
+      text-align: left;
+    }
+
+    .password-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
+    .password-wrapper input {
+      padding-right: 40px;
+    }
+
+    .toggle-eye {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      cursor: pointer;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="profile-box">
+    <h2>👤 Your Profile</h2>
+
+    <img id="profilePic" src="default.png" alt="Profile Picture">
+    <br>
+    <input type="file" id="picInput" accept="image/*"><br>
+
+    <div class="field-label">Username (Not editable):</div>
+    <input type="text" id="username" disabled>
+
+    <div class="field-label">Password:</div>
+    <div class="password-wrapper">
+      <input type="password" id="passwordField" disabled>
+      <span class="toggle-eye" onclick="togglePassword()">👁</span>
+    </div>
+
+    <div class="field-label">Your Name:</div>
+    <input type="text" id="nameInput" placeholder="Enter your name"><br>
+
+    <button onclick="saveProfile()">Save Profile</button>
+  </div>
+
+  <script>
+    const currentUser = localStorage.getItem("loggedInUsername");
+    if (!username) {
+      alert("Please login first.");
+      window.location.href = "index.html";
+    }
+
+    document.getElementById("username").value = username;
+
+    // Assuming password is saved under userPassword_<email>
+    const password = localStorage.getItem("userPassword_" + username);
+    document.getElementById("passwordField").value = password || "******";
+
+    const userProfile = JSON.parse(localStorage.getItem("userProfile_" + currentUser)) || {};
+    document.getElementById("nameInput").value = password || "";
+    if (userProfile.image) {
+      document.getElementById("profilePic").src = userProfile.image;
+    }
+
+    document.getElementById("picInput").addEventListener("change", function (event) {
+      const reader = new FileReader();
+      reader.onload = function () {
+        document.getElementById("profilePic").src = reader.result;
+        userProfile.image = reader.result;
+localStorage.setItem("userProfile_" + currentUser, JSON.stringify(userProfile));
+      };
+      reader.readAsDataURL(event.target.files[0]);
+    });
+
+    function togglePassword() {
+      const field = document.getElementById("passwordField");
+      field.type = field.type === "password" ? "text" : "password";
+    }
+
+    function saveProfile() {
+      const name = document.getElementById("nameInput").value;
+      userProfile.name = name;
+      localStorage.setItem("userProfile_" + currentUser, JSON.stringify(userProfile));
+      alert("Profile updated!");
+    }
+  </script>
+<br>
+<a href="home.html" class="back-button">⬅ Back to Home</a>
+</body>
+</html>
