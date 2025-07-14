@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🏆 Update Best Gang Member</title>
+  <style>
+    body {
+      background: #111;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      padding: 40px;
+    }
+
+    h2 {
+      color: gold;
+      margin-bottom: 20px;
+    }
+
+    select, button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    select {
+      background: #1a1a1a;
+      color: white;
+    }
+
+    button {
+      background: crimson;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: darkred;
+    }
+
+    .preview {
+      margin-top: 20px;
+      padding: 20px;
+      background: #1e1e1e;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .preview img {
+      width: 100px;
+      border-radius: 50%;
+      margin-bottom: 10px;
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 10px 20px;
+      background: #333;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .back-btn:hover {
+      background-color: crimson;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+  <h2>🏆 Select Best Gang Member</h2>
+  <select id="memberSelect" onchange="previewMember()">
+    <option value="">-- Select a Member --</option>
+  </select>
+
+  <div class="preview" id="memberPreview" style="display: none;">
+    <img id="previewImg" src="" />
+    <h3 id="previewName"></h3>
+    <p id="previewDesig"></p>
+  </div>
+
+  <button onclick="saveBestMember()">✅ Set as Best Gang Member</button>
+
+  <a href="admin.html" class="back-btn">🔙 Back to Admin Panel</a>
+
+  <script>
+    const members = JSON.parse(localStorage.getItem("approvedMembers") || "[]");
+    const select = document.getElementById("memberSelect");
+
+    members.forEach((m, i) => {
+      const opt = document.createElement("option");
+      opt.value = i;
+      opt.text = `${m.name} - ${m.designation}`;
+      select.appendChild(opt);
+    });
+
+    function previewMember() {
+      const index = select.value;
+      if (index === "") return;
+      const member = members[index];
+
+      document.getElementById("previewImg").src = member.image;
+      document.getElementById("previewName").innerText = member.name;
+      document.getElementById("previewDesig").innerText = `Designation: ${member.designation}`;
+      document.getElementById("memberPreview").style.display = "block";
+    }
+
+    function saveBestMember() {
+      const index = select.value;
+      if (index === "") return alert("⚠ Please select a member first.");
+      const member = members[index];
+      localStorage.setItem("bestGangMember", JSON.stringify(member));
+      alert("🎉 Best Gang Member updated!");
+    }
+  </script>
+
+</body>
+</html>

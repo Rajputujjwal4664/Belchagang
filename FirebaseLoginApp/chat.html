@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>💬 Belcha Gang Chat</title>
+  <style>
+    body {
+      background: url('dark-chat.jpeg') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #00ffff;
+    }
+
+    #chatBox {
+      background: #1a1a1a;
+      padding: 20px;
+      border-radius: 10px;
+      height: 400px;
+      overflow-y: auto;
+      margin-bottom: 20px;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    }
+
+    .msg {
+      margin-bottom: 10px;
+    }
+
+    input[type="text"] {
+      width: 80%;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: none;
+      background: #333;
+      color: white;
+    }
+
+    button {
+      padding: 12px 20px;
+      background-color: crimson;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: darkred;
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #333;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .back-btn:hover {
+      background-color: crimson;
+      color: #fff;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+  <h2>💬 Belcha Gang Chat Room</h2>
+
+  <div id="chatBox" style="height: 300px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;"></div>
+
+  <input type="text" id="chatInput" placeholder="Type your message..." style="width: 70%;" />
+  <button onclick="sendMessage()">Send</button>
+
+  <br>
+  <a href="home.html" class="back-btn">🔙 Back to Dashboard</a>
+
+  <script>
+    const chatBox = document.getElementById("chatBox");
+    const input = document.getElementById("chatInput");
+
+    function loadMessages() {
+      const msgs = JSON.parse(localStorage.getItem("chatMessages") || "[]");
+      chatBox.innerHTML = msgs.map(m => `<div class="msg">🗨 <b>${m.user}:</b> ${m.text}</div>`).join("");
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function sendMessage() {
+      const text = input.value.trim();
+      if (text === "") return;
+      const user = localStorage.getItem("loggedInUsername") || "Anonymous";
+      const msgs = JSON.parse(localStorage.getItem("chatMessages") || "[]");
+      msgs.push({ user, text });
+      localStorage.setItem("chatMessages", JSON.stringify(msgs));
+      input.value = "";
+      loadMessages();
+    }
+
+    // Enter key to send
+    input.addEventListener("keypress", function (e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    window.onload = loadMessages;
+  </script>
+<script>
+
+  function sendMessage() {
+    const text = input.value.trim();
+    if (text === "") return;
+
+    const user = localStorage.getItem("loggedInUsername") || "Anonymous";
+
+    const msgs = JSON.parse(localStorage.getItem("chatMessages") || "[]");
+    msgs.push({ user, text });
+
+    localStorage.setItem("chatMessages", JSON.stringify(msgs));
+    input.value = "";
+    loadMessages();
+  }
+
+  function loadMessages() {
+    const msgs = JSON.parse(localStorage.getItem("chatMessages") || "[]");
+    chatBox.innerHTML = msgs
+      .map(m => `<div><strong>${m.user}:</strong> ${m.text}</div>`)
+      .join("");
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  // ENTER key to send message
+  input.addEventListener("keypress", function (e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  // Load previous messages on page load
+  window.onload = loadMessages;
+</script>
+
+</body>
+</html>
