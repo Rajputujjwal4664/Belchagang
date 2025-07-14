@@ -105,12 +105,47 @@
     const confirmationMsg = document.getElementById('confirmationMsg');
 
     form.addEventListener('submit', function (e) {
-      e.preventDefault();
+  e.preventDefault();
 
-      // Yahan backend ya Firebase submission hoga (future me)
+  const name = document.getElementById('name').value.trim();
+  const designation = document.getElementById('designation').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const experience = document.getElementById('experience').value.trim();
+  const profilePicFile = document.getElementById('profilePic').files[0];
+  const marksheetFile = document.getElementById('marksheet').files[0];
+
+  const reader1 = new FileReader();
+  const reader2 = new FileReader();
+
+  reader1.onload = function () {
+    const profilePicData = reader1.result;
+
+    reader2.onload = function () {
+      const marksheetData = reader2.result;
+
+      const requestData = {
+        name,
+        designation,
+        phone,
+        experience,
+        profilePic: profilePicData,
+        marksheet: marksheetData,
+        timestamp: Date.now()
+      };
+
+      const oldData = JSON.parse(localStorage.getItem("membershipRequests") || "[]");
+      oldData.push(requestData);
+      localStorage.setItem("membershipRequests", JSON.stringify(oldData));
+
       confirmationMsg.style.display = 'block';
       form.reset();
-    });
+    };
+
+    reader2.readAsDataURL(marksheetFile);
+  };
+
+  reader1.readAsDataURL(profilePicFile);
+});
   </script>
 </body>
 </html>
