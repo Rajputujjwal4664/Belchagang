@@ -140,7 +140,7 @@
 
     // Assuming password is saved under userPassword_<email>
     const password = localStorage.getItem("userPassword_" + username);
-    document.getElementById("passwordField").value = password || "******";
+    document.getElementById("passwordField").value = password || "";
 
     const userProfile = JSON.parse(localStorage.getItem("userProfile_" + currentUser)) || {};
     document.getElementById("nameInput").value = userProfile.name  || "";
