@@ -135,7 +135,7 @@
     document.getElementById("passwordField").value = password || "******";
 
     const userProfile = JSON.parse(localStorage.getItem("userProfile_" + currentUser)) || {};
-    document.getElementById("nameInput").value = password || "";
+    document.getElementById("nameInput").value = userProfile.name  || "";
     if (userProfile.image) {
       document.getElementById("profilePic").src = userProfile.image;
     }
