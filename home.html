@@ -325,12 +325,13 @@
 </div>
 
 <script>
-  const user = localStorage.getItem("loggedInUser");
-  const profile = JSON.parse(localStorage.getItem("userProfile_" + user)) || {};
+  const currentuser = localStorage.getItem("loggedInUsername");
+  const profile = JSON.parse(localStorage.getItem("userProfile_" + currentUser)) || {};
+  const avatarImg = document.getElementById("avatarImg");
   if (profile.image) {
-    document.getElementById("avatarImg").src = profile.image;
+    avatarImg.src = profile.image;
   } else{
-document.getElementById("avatarImg").src = "default.jpg";
+avatarImg.src = "default.jpg";
 }
 </script>
 </body>
