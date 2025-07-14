@@ -120,7 +120,15 @@
 
     <button onclick="saveProfile()">Save Profile</button>
   </div>
-
+<script>
+  function saveProfile() {
+  const name = document.getElementById("nameInput").value;
+  userProfile.name = name;
+  localStorage.setItem("userProfile_" + currentUser, JSON.stringify(userProfile));
+  alert("Profile updated!");
+  window.location.href = "home.html"; // 👈 home pe redirect karega jisse updated photo dikh jaaye
+}
+</script>
   <script>
     const currentUser = localStorage.getItem("loggedInUsername");
     if (!username) {
