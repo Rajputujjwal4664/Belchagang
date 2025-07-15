@@ -83,7 +83,7 @@
       <input type="text" id="designation" placeholder="Desired Designation" required />
       <input type="tel" id="phone" placeholder="Phone Number" required />
       <input type="number" id="experience" placeholder="Experience (in years)" min="0" required />
-      
+
       <label for="profilePic">Upload Profile Picture</label>
       <input type="file" id="profilePic" accept="image/*" required />
 
@@ -100,38 +100,56 @@
     <a href="home.html" class="back-home">⬅ Back to Home</a>
   </div>
 
- <script>
-  const form = document.getElementById('membershipForm');
+  <!-- 🔥 Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
+  <script>
+    // 🛠 Replace with your own Firebase config ↓↓↓
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+    // ✅ Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const storage = firebase.storage();
+    const database = firebase.database();
+  </script>
 
-    const name = document.getElementById('name').value.trim();
-    const designation = document.getElementById('designation').value.trim();
-    const phone = document.getElementById('phone').value.trim();
-    const experience = document.getElementById('experience').value.trim();
-    const profilePicFile = document.getElementById('profilePic').files[0];
-    const marksheetFile = document.getElementById('marksheet').files[0];
-    const username = localStorage.getItem("loggedInUsername");
+  <script>
+    const form = document.getElementById('membershipForm');
+    const confirmationMsg = document.getElementById('confirmationMsg');
 
-    if (!username) {
-      alert("❌ Please login first before submitting membership request.");
-      return;
-    }
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
 
-    if (!name || !designation || !phone || !experience || !profilePicFile || !marksheetFile) {
-      alert("⚠ Sab fields bharo, aur dono file upload karo.");
-      return;
-    }
+      const name = document.getElementById('name').value.trim();
+      const designation = document.getElementById('designation').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const experience = document.getElementById('experience').value.trim();
+      const profilePicFile = document.getElementById('profilePic').files[0];
+      const marksheetFile = document.getElementById('marksheet').files[0];
+      const username = localStorage.getItem("loggedInUsername");
 
-    const reader1 = new FileReader();
-    const reader2 = new FileReader();
+      if (!username) return alert("❌ Please login first.");
+      if (!name || !designation || !phone || !experience || !profilePicFile || !marksheetFile)
+        return alert("⚠ Please fill all fields and upload files.");
 
-    reader1.onload = function () {
-      const profilePicData = reader1.result;
+      try {
+        const profilePicRef = storage.ref(profilePics/${username}_${Date.now()});
+        const marksheetRef = storage.ref(marksheets/${username}_${Date.now()});
 
-      reader2.onload = function () {
-        const marksheetData = reader2.result;
+        const profileSnap = await profilePicRef.put(profilePicFile);
+        const marksheetSnap = await marksheetRef.put(marksheetFile);
+
+        const profilePicURL = await profileSnap.ref.getDownloadURL();
+        const marksheetURL = await marksheetSnap.ref.getDownloadURL();
 
         const requestData = {
           username,
@@ -139,27 +157,28 @@
           designation,
           phone,
           experience,
-          profilePic: profilePicData,
-          marksheet: marksheetData,
+          profilePicURL,
+          marksheetURL,
+          status: "pending",
           timestamp: Date.now()
         };
 
-        const old = JSON.parse(localStorage.getItem("membershipRequests") || "[]");
-        old.push(requestData);
-        localStorage.setItem("membershipRequests", JSON.stringify(old));
+        await database.ref("membershipRequests").push(requestData);
 
-        // ✅ Set notification to show on home
+        // Notification + redirect
         localStorage.setItem(username + "_notification", "✅ Membership request submitted. Wait for admin approval.");
+        confirmationMsg.style.display = "block";
+        form.reset();
 
-        // ✅ Redirect to home
-        window.location.href = "home.html";
-      };
+        setTimeout(() => {
+          window.location.href = "home.html";
+        }, 2000);
 
-      reader2.readAsDataURL(marksheetFile);
-    };
-
-    reader1.readAsDataURL(profilePicFile);
-  });
-</script>
+      } catch (error) {
+        console.error("Upload Error:", error);
+        alert("❌ Upload failed. Try again.");
+      }
+    });
+  </script>
 </body>
 </html>
