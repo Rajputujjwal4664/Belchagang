@@ -100,7 +100,7 @@
     <a href="home.html" class="back-home">⬅ Back to Home</a>
   </div>
 
-  <script>
+ <script>
   const form = document.getElementById('membershipForm');
 
   form.addEventListener('submit', function (e) {
@@ -115,12 +115,12 @@
     const username = localStorage.getItem("loggedInUsername");
 
     if (!username) {
-      alert("⚠ You must be logged in to submit a membership request.");
+      alert("⚠ Login first before submitting membership request.");
       return;
     }
 
     if (!profilePicFile || !marksheetFile) {
-      alert("⚠ Please upload both profile photo and marksheet.");
+      alert("⚠ Please upload both profile picture and marksheet (PDF).");
       return;
     }
 
@@ -144,14 +144,14 @@
           timestamp: Date.now()
         };
 
-        const oldData = JSON.parse(localStorage.getItem("membershipRequests") || "[]");
-        oldData.push(requestData);
-        localStorage.setItem("membershipRequests", JSON.stringify(oldData));
+        const oldRequests = JSON.parse(localStorage.getItem("membershipRequests") || "[]");
+        oldRequests.push(requestData);
+        localStorage.setItem("membershipRequests", JSON.stringify(oldRequests));
 
-        // ✅ Save a notification to show on home page
-        localStorage.setItem(username + "_notification", "✅ Your membership request has been submitted. Please wait for admin approval.");
+        // ✅ Notification message
+        localStorage.setItem(username + "_notification", "✅ Membership request submitted. Wait for admin approval.");
 
-        // ✅ Redirect to home.html
+        // ✅ Redirect to home
         window.location.href = "home.html";
       };
 
