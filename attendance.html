@@ -87,13 +87,23 @@
   </div>
 
   <script>
+  // Sirf agar yeh variables pehle define nahi hue toh define karo
   const currentUser = localStorage.getItem("loggedInUsername");
-  const approvedList = JSON.parse(localStorage.getItem("approvedMembers") || "[]");
+  let approvedListRaw = localStorage.getItem("approvedMembers");
+
+  let approvedList = [];
+  try {
+    approvedList = JSON.parse(approvedListRaw || "[]");
+  } catch (e) {
+    console.error("JSON parse error in approvedMembers:", e);
+  }
 
   console.log("Logged in user:", currentUser);
   console.log("Approved list:", approvedList);
 
-  const isApproved = approvedList.some(member => member.username?.toLowerCase() === currentUser?.toLowerCase());
+  const isApproved = approvedList.some(member =>
+    member.username?.toLowerCase() === currentUser?.toLowerCase()
+  );
 
   console.log("Is approved:", isApproved);
 
