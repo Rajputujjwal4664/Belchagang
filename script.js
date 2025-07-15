@@ -18,8 +18,8 @@ function signup() {
 }
 
 function login() {
-  const username = document.getElementById("username").value.trim();
-  const password = document.getElementById("password").value.trim();
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
   const email = username + "@baalumafia.com";
 
   if (!username || !password) {
@@ -27,14 +27,14 @@ function login() {
     return;
   }
 
-  firebase.auth().signInWithEmailAndPassword(email, password)
-    .then(() => {
-      alert("✅ Login successful!");
+  firebase.auth().signInWithEmailAndPassword(username, password)
+    .then((userCredential) => {
       localStorage.setItem("loggedInUsername", username);
-      localStorage.setItem("userPassword", + username, password);
+      localStorage.setItem("userPassword_", + username, password);
+      alert("✅ Login successful!");
       window.location.href = "home.html";
     })
     .catch((error) => {
-      alert("❌ Error: " + error.message);
+      alert("❌ Invalid Login!\n" + error.message);
     });
 }
