@@ -18,15 +18,20 @@ function signup() {
 }
 
 function login() {
-  const username = document.getElementById("username").value;
-  const password = document.getElementById("password").value;
-  const email = username + "@baalumafia.com";
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
 
   if (!username || !password) {
     alert("⚠ Username aur password bharo!");
     return;
   }
-
+cons usernameRegex = /^[a-zA-Z0-9_]+$/;
+  if (!usernameRegex.test(username)) {
+    alert("⚠Username sirf alphabets, numbers ya underscore me hona chahiye. Space mat do!");
+    return;
+  }
+  cons email = username + "@baalumafia.com";
+  
   firebase.auth().signInWithEmailAndPassword(username, password)
     .then((userCredential) => {
       localStorage.setItem("loggedInUsername", username);
