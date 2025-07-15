@@ -326,25 +326,31 @@
 </style>
   <script>
   const currentUser = localStorage.getItem("loggedInUsername");
-  const approved = JSON.parse(localStorage.getItem("approvedMembers") || "[]");
-  const isApproved = approved.some(member => member.username === currentUser);
+  const approvedMembers = JSON.parse(localStorage.getItem("approvedMembers") || "[]");
+  const isApproved = approvedMembers.some(member => member.username === currentUser);
 
-  // Disable restricted links
+  // Agar approved nahi hai toh saari restricted links ko disable karo
   if (!isApproved) {
-    document.getElementById("chatLink").addEventListener("click", (e) => {
-      e.preventDefault();
-      alert("❌ Aapka membership abhi approve nahi hua. Access denied.");
-    });
+    const restrictedPages = ["attendance.html", "work.html", "chat.html"];
 
-    const linksToRestrict = ["attendance.html", "work.html"];
-    document.querySelectorAll(".nav-links a").forEach(link => {
-      if (linksToRestrict.includes(link.getAttribute("href"))) {
-        link.addEventListener("click", (e) => {
+    document.querySelectorAll("a").forEach(link => {
+      const href = link.getAttribute("href");
+      if (restrictedPages.includes(href)) {
+        link.addEventListener("click", function (e) {
           e.preventDefault();
-          alert("❌ Aapka membership abhi approve nahi hua. Access denied.");
+          alert("❌ Aapka membership abhi tak approve nahi hua. Yeh section abhi locked hai.");
         });
       }
     });
+
+    // 🔒 Optionally message show karo screen par
+    const lockNote = document.createElement("div");
+    lockNote.innerHTML = "🔒 Your membership is not approved yet. Attendance, work & chat are locked.";
+    lockNote.style.color = "orange";
+    lockNote.style.textAlign = "center";
+    lockNote.style.fontWeight = "bold";
+    lockNote.style.marginTop = "20px";
+    document.body.insertBefore(lockNote, document.body.firstChild);
   }
 </script>
 </body>
