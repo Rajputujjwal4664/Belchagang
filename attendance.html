@@ -85,8 +85,7 @@
     <br />
     <a href="home.html" class="back-link">⬅ Back to Home</a>
   </div>
-
-  <script>
+<script>
   const currentUser = localStorage.getItem("loggedInUsername");
   const approvedList = JSON.parse(localStorage.getItem("approvedMembers") || "[]");
 
@@ -97,7 +96,6 @@
     window.location.href = "home.html";
   }
 </script>
-
   <script>
     const username = localStorage.getItem("loggedInUsername");
     const today = new Date().toLocaleDateString("en-GB");
