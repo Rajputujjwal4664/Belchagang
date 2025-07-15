@@ -326,31 +326,36 @@
 </style>
   <script>
   const currentUser = localStorage.getItem("loggedInUsername");
-  const approvedMembers = JSON.parse(localStorage.getItem("approvedMembers") || "[]");
-  const isApproved = approvedMembers.some(member => member.username === currentUser);
+  const approvedList = JSON.parse(localStorage.getItem("approvedMembers") || "[]");
 
-  // Agar approved nahi hai toh saari restricted links ko disable karo
+  // Check if current user is in approvedMembers
+  const isApproved = approvedList.some(member => member.username === currentUser);
+
   if (!isApproved) {
-    const restrictedPages = ["attendance.html", "work.html", "chat.html"];
-
+    // Disable links to locked pages
+    const restrictedLinks = ["attendance.html", "work.html", "chat.html"];
     document.querySelectorAll("a").forEach(link => {
       const href = link.getAttribute("href");
-      if (restrictedPages.includes(href)) {
+      if (restrictedLinks.includes(href)) {
         link.addEventListener("click", function (e) {
           e.preventDefault();
-          alert("❌ Aapka membership abhi tak approve nahi hua. Yeh section abhi locked hai.");
+          alert("🚫 Aapka membership abhi tak approve nahi hua. Yeh feature locked hai.");
         });
       }
     });
 
-    // 🔒 Optionally message show karo screen par
-    const lockNote = document.createElement("div");
-    lockNote.innerHTML = "🔒 Your membership is not approved yet. Attendance, work & chat are locked.";
-    lockNote.style.color = "orange";
-    lockNote.style.textAlign = "center";
-    lockNote.style.fontWeight = "bold";
-    lockNote.style.marginTop = "20px";
-    document.body.insertBefore(lockNote, document.body.firstChild);
+    // Optional: Show warning on top of page
+    const warning = document.createElement("div");
+    warning.textContent = "🔒 Your membership is not approved yet. Attendance, Work & Chat are locked.";
+    warning.style.background = "#330000";
+    warning.style.color = "white";
+    warning.style.textAlign = "center";
+    warning.style.padding = "10px";
+    warning.style.fontWeight = "bold";
+    warning.style.position = "sticky";
+    warning.style.top = "0";
+    warning.style.zIndex = "9999";
+    document.body.prepend(warning);
   }
 </script>
 </body>
