@@ -24,7 +24,9 @@ function signup() {
 
   // ✅ Firebase Signup
   firebase.auth().createUserWithEmailAndPassword(email, password)
-    .then(() => {
+    .then((userCredential) => {
+      localStorage.setItem("loggedInUsername",username);
+      localStorage.setItem("userPassword_" + username, password);
       alert("✅ Account ban gaya! Ab login karo.");
       window.location.href = "index.html";
     })
