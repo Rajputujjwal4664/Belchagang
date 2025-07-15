@@ -142,8 +142,8 @@
         return alert("⚠ Please fill all fields and upload files.");
 
       try {
-        const profilePicRef = storage.ref(profilePics/${username}_${Date.now()});
-        const marksheetRef = storage.ref(marksheets/${username}_${Date.now()});
+        const profilePicRef = storage.ref(`profilePics/${username}_${Date.now()}`);
+        const marksheetRef = storage.ref(`marksheets/${username}_${Date.now()}`);
 
         const profileSnap = await profilePicRef.put(profilePicFile);
         const marksheetSnap = await marksheetRef.put(marksheetFile);
