@@ -81,7 +81,8 @@
 
   <div id="chatBox" style="height: 300px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;"></div>
 
-  <input type="text" id="chatInput" placeholder="Type your message..." style="width: 70%;" />
+  <input type="text" id="chatInput" placeholder="Type your message..." style="width: 60%;" />
+  <input type="file" id="fileInput" />
   <button onclick="sendMessage()">Send</button>
 
   <br>
@@ -97,64 +98,66 @@
     window.location.href = "home.html";
   }
 </script>
-  
-
   <script>
-    const chatBox = document.getElementById("chatBox");
-    const input = document.getElementById("chatInput");
-
-    function loadMessages() {
-      const msgs = JSON.parse(localStorage.getItem("chatMessages") || "[]");
-      chatBox.innerHTML = msgs.map(m => `<div class="msg">🗨 <b>${m.user}:</b> ${m.text}</div>`).join("");
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
-
-    function sendMessage() {
-      const text = input.value.trim();
-      if (text === "") return;
-      const user = localStorage.getItem("loggedInUsername") || "Anonymous";
-      const msgs = JSON.parse(localStorage.getItem("chatMessages") || "[]");
-      msgs.push({ user, text });
-      localStorage.setItem("chatMessages", JSON.stringify(msgs));
-      input.value = "";
-      loadMessages();
-    }
-
-    // Enter key to send
-    input.addEventListener("keypress", function (e) {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        sendMessage();
-      }
-    });
-
-    window.onload = loadMessages;
-  </script>
-<script>
+  const chatBox = document.getElementById("chatBox");
+  const input = document.getElementById("chatInput");
+  const fileInput = document.getElementById("fileInput");
 
   function sendMessage() {
     const text = input.value.trim();
-    if (text === "") return;
-
+    const file = fileInput.files[0];
     const user = localStorage.getItem("loggedInUsername") || "Anonymous";
+    let messages = JSON.parse(localStorage.getItem("chatMessages") || "[]");
 
-    const msgs = JSON.parse(localStorage.getItem("chatMessages") || "[]");
-    msgs.push({ user, text });
+    let message = { user };
 
-    localStorage.setItem("chatMessages", JSON.stringify(msgs));
-    input.value = "";
-    loadMessages();
+    if (text) {
+      message.text = text;
+    }
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        message.file = {
+          name: file.name,
+          url: e.target.result,
+          type: file.type
+        };
+        messages.push(message);
+        localStorage.setItem("chatMessages", JSON.stringify(messages));
+        input.value = "";
+        fileInput.value = "";
+        loadMessages();
+      };
+      reader.readAsDataURL(file);
+    } else {
+      if (!text) return;
+      messages.push(message);
+      localStorage.setItem("chatMessages", JSON.stringify(messages));
+      input.value = "";
+      fileInput.value = "";
+      loadMessages();
+    }
   }
 
   function loadMessages() {
-    const msgs = JSON.parse(localStorage.getItem("chatMessages") || "[]");
-    chatBox.innerHTML = msgs
-      .map(m => `<div><strong>${m.user}:</strong> ${m.text}</div>`)
-      .join("");
+    const messages = JSON.parse(localStorage.getItem("chatMessages") || "[]");
+    chatBox.innerHTML = messages.map(m => {
+      let html = `<div class="msg">🗨 <b>${m.user}:</b> `;
+      if (m.text) html += ${m.text}<br>;
+      if (m.file) {
+        if (m.file.type.startsWith("image/")) {
+          html += <img src="${m.file.url}" style="max-width: 200px; border-radius: 6px; margin-top: 5px;"><br>;
+        } else {
+          html += <a href="${m.file.url}" download="${m.file.name}" style="color: lightblue;">📎 ${m.file.name}</a><br>;
+        }
+      }
+      html += </div>;
+      return html;
+    }).join("");
     chatBox.scrollTop = chatBox.scrollHeight;
   }
 
-  // ENTER key to send message
   input.addEventListener("keypress", function (e) {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -162,7 +165,6 @@
     }
   });
 
-  // Load previous messages on page load
   window.onload = loadMessages;
 </script>
 
