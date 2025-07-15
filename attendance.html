@@ -85,17 +85,7 @@
     <br />
     <a href="home.html" class="back-link">⬅ Back to Home</a>
   </div>
-<script>
-  const currentUser = localStorage.getItem("loggedInUsername");
-  const approvedList = JSON.parse(localStorage.getItem("approvedMembers") || "[]");
 
-  const isApproved = approvedList.some(member => member.username === currentUser);
-
-  if (!isApproved) {
-    alert("❌ Membership not approved yet. Access denied.");
-    window.location.href = "home.html";
-  }
-</script>
   <script>
     const username = localStorage.getItem("loggedInUsername");
     const today = new Date().toLocaleDateString("en-GB");
@@ -130,6 +120,16 @@
       markBtn.textContent = "✔ Present";
     }
   </script>
+<script>
+  const currentUser = localStorage.getItem("loggedInUsername");
+  const approvedList = JSON.parse(localStorage.getItem("approvedMembers") || "[]");
 
+  const isApproved = approvedList.some(member => member.username === currentUser);
+
+  if (!isApproved) {
+    alert("🚫 Aapka membership abhi tak approve nahi hua. Yeh page locked hai.");
+    window.location.href = "home.html";
+  }
+</script>
 </body>
 </html>
