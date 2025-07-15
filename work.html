@@ -1,163 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Today's Work - Belcha Gang</title>
-  <link rel="stylesheet" href="style.css" />
-<style>
-  html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-  }
+  <meta charset="UTF-8" />
+  <title>Belcha Gang Work Zone</title>
+  <style>
+    body {
+      background-color: #121212;
+      font-family: 'Segoe UI', sans-serif;
+      color: white;
+      padding: 40px;
+    }
 
-  body {
-    background: url('cloud-work.jpg') no-repeat center center fixed;
-    background-size: cover;
-    color: white;
-    font-family: Arial, sans-serif;
-    padding: 20px;
-  }
-</style>
-  </head>
+    .work-container {
+      max-width: 600px;
+      margin: auto;
+      background: #1f1f1f;
+      border-left: 5px solid crimson;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+    }
+
+    h2 {
+      color: crimson;
+      text-align: center;
+    }
+
+    textarea {
+      width: 100%;
+      height: 100px;
+      background-color: #2b2b2b;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 16px;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 12px 25px;
+      background-color: crimson;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: darkred;
+    }
+
+    .back-link {
+      display: block;
+      margin-top: 30px;
+      text-align: center;
+      color: #00ffff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .work-log {
+      margin-top: 20px;
+      background: #181818;
+      padding: 15px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
 <body>
+  <div class="work-container">
+    <h2>🛠 Belcha Gang Work Submit</h2>
+    <textarea id="workInput" placeholder="Enter today's work..."></textarea>
+    <button onclick="submitWork()">Submit Work</button>
 
-  <div class="container">
-    <h2 style="text-align:center;">🛠 Today's Work</h2>
+    <div class="work-log" id="logBox"></div>
 
-    <!-- Work Form -->
-    <div class="work-form" style="text-align:center;">
-      <input type="text" id="workName" placeholder="📄 Work Name" />
-      <input type="text" id="place" placeholder="📍 Place" />
-      <button onclick="submitWork()">🚀 Post Work</button>
-    </div>
-
-    <!-- 🔙 Back to Home Button -->
-    <div style="text-align:center; margin-top: 20px;">
-      <a href="home.html" class="back-button"> ⬅ Back to Home</a>
-    </div>
-
-    <!-- Work Table -->
-    <div id="workSection" style="margin-top: 30px;">
-      <table id="workTable" style="width:100%; border-collapse: collapse;">
-        <thead>
-          <tr style="background: #ff3c3c;">
-            <th style="padding:10px;">📄 Work</th>
-            <th>📍 Place</th>
-            <th>📅 Date</th>
-            <th>✅ Completed By</th>
-            <th>✔ Done</th>
-          </tr>
-        </thead>
-        <tbody id="workBody"></tbody>
-      </table>
-    </div>
+    <a href="home.html" class="back-link">⬅ Back to Dashboard</a>
   </div>
-  <script>
-  const currentUser = localStorage.getItem("loggedInUsername");
-  const approvedList = JSON.parse(localStorage.getItem("approvedMembers") || "[]");
-
-  const isApproved = approvedList.some(member => member.username === currentUser);
-
-  if (!isApproved) {
-    alert("❌ Membership not approved yet. Access denied.");
-    window.location.href = "home.html";
-  }
-</script>
 
   <script>
-    const loggedInUser = localStorage.getItem("loggedInUsername") || "Unknown";
+    const currentUser = localStorage.getItem("loggedInUsername");
+    const approvedMembers = JSON.parse(localStorage.getItem("approvedMembers") || "[]");
 
-    function getFormattedDate() {
-      const now = new Date();
-      const dd = String(now.getDate()).padStart(2, '0');
-      const mm = String(now.getMonth() + 1).padStart(2, '0');
-      const yyyy = now.getFullYear();
-      return '${dd}/${mm}/${yyyy}';
+    const isApproved = approvedMembers.some(member => member.username === currentUser);
+
+    if (!currentUser || !isApproved) {
+      alert("🚫 Aapka membership abhi tak approve nahi hua. Yeh page locked hai.");
+      window.location.href = "home.html";
+    }
+  </script>
+
+  <script>
+    const input = document.getElementById("workInput");
+    const logBox = document.getElementById("logBox");
+
+    function loadWork() {
+      const workData = JSON.parse(localStorage.getItem("workData") || "{}");
+      const userWork = workData[currentUser] || [];
+      logBox.innerHTML = "<h4>Your Submitted Work:</h4>" + userWork.map(w => 📌 ${w}).join("<br>");
     }
 
     function submitWork() {
-      const name = document.getElementById("workName").value.trim();
-      const place = document.getElementById("place").value.trim();
+      const workText = input.value.trim();
+      if (!workText) return;
 
-      if (!name || !place) {
-        alert("⚠ Work Name aur Place dono bharna zaroori hai!");
-        return;
+      const workData = JSON.parse(localStorage.getItem("workData") || "{}");
+      if (!workData[currentUser]) {
+        workData[currentUser] = [];
       }
 
-      const newWork = {
-        name,
-        place,
-        date: getFormattedDate(),
-        completedBy: []
-      };
-
-      const allWorks = JSON.parse(localStorage.getItem("todayWorks") || "[]");
-      allWorks.unshift(newWork);
-      localStorage.setItem("todayWorks", JSON.stringify(allWorks));
-
-      document.getElementById("workName").value = "";
-      document.getElementById("place").value = "";
-
-      loadWorks();
+      workData[currentUser].push(workText);
+      localStorage.setItem("workData", JSON.stringify(workData));
+      input.value = "";
+      loadWork();
     }
 
-    function loadWorks() {
-      const allWorks = JSON.parse(localStorage.getItem("todayWorks") || "[]");
-      const tbody = document.getElementById("workBody");
-      tbody.innerHTML = "";
-
-      allWorks.forEach((work, index) => {
-        const completedByList = work.completedBy || [];
-        const isCompleted = completedByList.includes(loggedInUser);
-
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td style="padding:10px;">${work.name}</td>
-          <td>${work.place}</td>
-          <td>${work.date}</td>
-          <td>${completedByList.join(", ") || '—'}</td>
-          <td>
-            <input type="checkbox" ${isCompleted ? "checked disabled" : ""} onchange="markCompleted(${index})" />
-          </td>
-        `;
-        tbody.appendChild(row);
-      });
-    }
-
-    function markCompleted(index) {
-      const allWorks = JSON.parse(localStorage.getItem("todayWorks") || "[]");
-
-      if (!allWorks[index].completedBy.includes(loggedInUser)) {
-        allWorks[index].completedBy.push(loggedInUser);
-      }
-
-      localStorage.setItem("todayWorks", JSON.stringify(allWorks));
-      loadWorks();
-    }
-
-    loadWorks();
+    window.onload = loadWork;
   </script>
-<style>
-.back-button {
-  display: inline-block;
-  padding: 10px 20px;
-  background-color: #222;
-  color: #fff;
-  text-decoration: none;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  font-weight: bold;
-  box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
-}
-
-.back-button:hover {
-  background-color: crimson;  /* Red hover */
-  color: #fff;
-  transform: scale(1.05);
-  box-shadow: 3px 3px 10px rgba(0,0,0,0.7);
-}
-</style>
-
 </body>
 </html>
