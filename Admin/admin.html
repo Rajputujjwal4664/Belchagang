@@ -98,8 +98,6 @@
         <th>Designation</th>
         <th>Phone</th>
         <th>Experience</th>
-        <th>Profile Pic</th>
-        <th>Marksheet</th>
         <th>Change Designation</th>
         <th>Action</th>
       </tr>
@@ -116,7 +114,7 @@
     if (pendingRequests.length === 0) {
       const tr = document.createElement("tr");
       const td = document.createElement("td");
-      td.colSpan = 8;
+      td.colSpan = 6;
       td.style.textAlign = "center";
       td.textContent = "📭 No pending requests";
       tr.appendChild(td);
@@ -129,8 +127,6 @@
           <td>${req.designation}</td>
           <td>${req.phone}</td>
           <td>${req.experience}</td>
-          <td><a href="${req.photo}" target="_blank">View</a></td>
-          <td><a href="${req.pdf}" target="_blank">View</a></td>
           <td><input type="text" value="${req.designation}" class="designation-input" /></td>
           <td>
             <button class="approve" data-index="${index}">Approve</button>
@@ -153,16 +149,12 @@
 
           const phone = row.children[2].textContent.trim();
           const experience = row.children[3].textContent.trim();
-          const photoLink = row.children[4].querySelector('a').getAttribute('href');
-          const pdfLink = row.children[5].querySelector('a').getAttribute('href');
 
           approved.push({
             name: name,
             designation: newDesig,
-            image: photoLink,
             experience: experience,
             phone: phone,
-            pdf: pdfLink
           });
 
           localStorage.setItem("approvedMembers", JSON.stringify(approved));
