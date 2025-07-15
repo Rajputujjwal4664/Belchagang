@@ -124,7 +124,7 @@
   const currentUser = localStorage.getItem("loggedInUsername");
   const approvedList = JSON.parse(localStorage.getItem("approvedMembers") || "[]");
 
-  const isApproved = approvedList.some(member => member.username === currentUser);
+  const isApproved = approvedList.some(member => member.username?.trim() === currentUser?.trim());
 
   if (!isApproved) {
     alert("🚫 Aapka membership abhi tak approve nahi hua. Yeh page locked hai.");
