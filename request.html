@@ -100,33 +100,11 @@
     <a href="home.html" class="back-home">⬅ Back to Home</a>
   </div>
 
-  <!-- 🔥 Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-
-  <script>
-    // 🛠 Replace with your own Firebase config ↓↓↓
-    const firebaseConfig = {
-      apiKey: "AIzaSyCCx4QaXdzuUrZki39zJPZH9xXYUgmt2cY",
-      authDomain: "belcha-gang.firebaseapp.com",
-      databaseURL: "belcha-gang.firebaseapp.com",
-      projectId: "belcha-gang",
-      storageBucket: "belcha-gang.firebasestorage.app",
-      messagingSenderId: "762357625552",
-      appId: "1:762357625552:web:8a47b837b19ea7ad0864d5"
-    };
-    // ✅ Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const storage = firebase.storage();
-    const database = firebase.database();
-  </script>
-
   <script>
     const form = document.getElementById('membershipForm');
     const confirmationMsg = document.getElementById('confirmationMsg');
 
-    form.addEventListener('submit', async function (e) {
+    form.addEventListener('submit', function (e) {
       e.preventDefault();
 
       const name = document.getElementById('name').value.trim();
@@ -139,45 +117,48 @@
 
       if (!username) return alert("❌ Please login first.");
       if (!name || !designation || !phone || !experience || !profilePicFile || !marksheetFile)
-        return alert("⚠ Please fill all fields and upload files.");
+        return alert("⚠ Please fill all fields and upload both files.");
 
-      try {
-        const profilePicRef = storage.ref(`profilePics/${username}_${Date.now()}`);
-        const marksheetRef = storage.ref(`marksheets/${username}_${Date.now()}`);
+      const reader1 = new FileReader();
+      const reader2 = new FileReader();
 
-        const profileSnap = await profilePicRef.put(profilePicFile);
-        const marksheetSnap = await marksheetRef.put(marksheetFile);
+      reader1.onload = function () {
+        const profilePicData = reader1.result;
 
-        const profilePicURL = await profileSnap.ref.getDownloadURL();
-        const marksheetURL = await marksheetSnap.ref.getDownloadURL();
+        reader2.onload = function () {
+          const marksheetData = reader2.result;
 
-        const requestData = {
-          username,
-          name,
-          designation,
-          phone,
-          experience,
-          profilePicURL,
-          marksheetURL,
-          status: "pending",
-          timestamp: Date.now()
+          const requestData = {
+            username,
+            name,
+            designation,
+            phone,
+            experience,
+            profilePic: profilePicData,
+            marksheet: marksheetData,
+            status: "pending",
+            timestamp: Date.now()
+          };
+
+          const oldData = JSON.parse(localStorage.getItem("membershipRequests") || "[]");
+          oldData.push(requestData);
+          localStorage.setItem("membershipRequests", JSON.stringify(oldData));
+
+          // Show confirmation
+          confirmationMsg.style.display = "block";
+          form.reset();
+
+          // Optional: Set notification & redirect
+          localStorage.setItem(username + "_notification", "✅ Membership request submitted. Wait for admin approval.");
+          setTimeout(() => {
+            window.location.href = "home.html";
+          }, 2000);
         };
 
-        await database.ref("membershipRequests").push(requestData);
+        reader2.readAsDataURL(marksheetFile);
+      };
 
-        // Notification + redirect
-        localStorage.setItem(username + "_notification", "✅ Membership request submitted. Wait for admin approval.");
-        confirmationMsg.style.display = "block";
-        form.reset();
-
-        setTimeout(() => {
-          window.location.href = "home.html";
-        }, 2000);
-
-      } catch (error) {
-        console.error("Upload Error:", error);
-        alert("❌ Upload failed. Try again.");
-      }
+      reader1.readAsDataURL(profilePicFile);
     });
   </script>
 </body>
