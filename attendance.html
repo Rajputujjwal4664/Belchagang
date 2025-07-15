@@ -87,23 +87,21 @@
   </div>
 
   <script>
-    const currentUser = localStorage.getItem("loggedInUsername");
+  const currentUser = localStorage.getItem("loggedInUsername");
+  const approvedList = JSON.parse(localStorage.getItem("approvedMembers") || "[]");
 
-    // 🔒 Access Check
-    if (!currentUser) {
-      alert("❌ Pehle login karo!");
-      window.location.href = "index.html";
-    }
+  console.log("Logged in user:", currentUser);
+  console.log("Approved list:", approvedList);
 
-    const approvedList = JSON.parse(localStorage.getItem("approvedMembers") || "[]");
+  const isApproved = approvedList.some(member => member.username?.toLowerCase() === currentUser?.toLowerCase());
 
-    const isApproved = approvedList.some(member => member.username?.toLowerCase() === currentUser?.toLowerCase());
+  console.log("Is approved:", isApproved);
 
-    if (!isApproved) {
-      alert("🚫 Aapka membership abhi tak approve nahi hua. Yeh page locked hai.");
-      window.location.href = "home.html";
-    }
-  </script>
+  if (!isApproved) {
+    alert("🚫 Aapka membership abhi tak approve nahi hua. Yeh page locked hai.");
+    window.location.href = "home.html";
+  }
+</script>
 
   <script>
     const username = localStorage.getItem("loggedInUsername");
