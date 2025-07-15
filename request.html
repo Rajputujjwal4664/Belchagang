@@ -115,12 +115,12 @@
     const username = localStorage.getItem("loggedInUsername");
 
     if (!username) {
-      alert("⚠ Login first before submitting membership request.");
+      alert("❌ Please login first before submitting membership request.");
       return;
     }
 
-    if (!profilePicFile || !marksheetFile) {
-      alert("⚠ Please upload both profile picture and marksheet (PDF).");
+    if (!name || !designation || !phone || !experience || !profilePicFile || !marksheetFile) {
+      alert("⚠ Sab fields bharo, aur dono file upload karo.");
       return;
     }
 
@@ -144,11 +144,11 @@
           timestamp: Date.now()
         };
 
-        const oldRequests = JSON.parse(localStorage.getItem("membershipRequests") || "[]");
-        oldRequests.push(requestData);
-        localStorage.setItem("membershipRequests", JSON.stringify(oldRequests));
+        const old = JSON.parse(localStorage.getItem("membershipRequests") || "[]");
+        old.push(requestData);
+        localStorage.setItem("membershipRequests", JSON.stringify(old));
 
-        // ✅ Notification message
+        // ✅ Set notification to show on home
         localStorage.setItem(username + "_notification", "✅ Membership request submitted. Wait for admin approval.");
 
         // ✅ Redirect to home
