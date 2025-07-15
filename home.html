@@ -308,23 +308,7 @@
       }
     });
   });
-</script>
-<div id="userAvatar" onclick="window.location.href='profile.html'" style="
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  overflow: hidden;
-  cursor: pointer;
-  border: 2px solid white;
-  box-shadow: 0 0 8px rgba(0,0,0,0.6);
-">
-  <img id="avatarImg" src="default.jpg" style="width: 100%; height: 100%; object-fit: cover;">
-</div>
 
-<script>
   const currentUser = localStorage.getItem("loggedInUsername");
   const profile = JSON.parse(localStorage.getItem("userProfile_" + currentUser)) || {};
   if (profile.image) {
