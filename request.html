@@ -39,11 +39,6 @@
       border-radius: 5px;
     }
 
-    input[type="file"] {
-      background-color: #fff;
-      color: #000;
-    }
-
     .submit-btn {
       background-color: #ff3c3c;
       color: white;
@@ -84,12 +79,6 @@
       <input type="tel" id="phone" placeholder="Phone Number" required />
       <input type="number" id="experience" placeholder="Experience (in years)" min="0" required />
 
-      <label for="profilePic">Upload Profile Picture</label>
-      <input type="file" id="profilePic" accept="image/*" required />
-
-      <label for="marksheet">Upload 10th Marksheet (PDF)</label>
-      <input type="file" id="marksheet" accept="application/pdf" required />
-
       <button type="submit" class="submit-btn">Submit Request</button>
     </form>
 
@@ -101,64 +90,50 @@
   </div>
 
   <script>
-    const form = document.getElementById('membershipForm');
-    const confirmationMsg = document.getElementById('confirmationMsg');
+    const form = document.getElementById("membershipForm");
+    const confirmationMsg = document.getElementById("confirmationMsg");
 
-    form.addEventListener('submit', function (e) {
+    form.addEventListener("submit", function (e) {
       e.preventDefault();
 
-      const name = document.getElementById('name').value.trim();
-      const designation = document.getElementById('designation').value.trim();
-      const phone = document.getElementById('phone').value.trim();
-      const experience = document.getElementById('experience').value.trim();
-      const profilePicFile = document.getElementById('profilePic').files[0];
-      const marksheetFile = document.getElementById('marksheet').files[0];
+      const name = document.getElementById("name").value.trim();
+      const designation = document.getElementById("designation").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const experience = document.getElementById("experience").value.trim();
       const username = localStorage.getItem("loggedInUsername");
 
-      if (!username) return alert("❌ Please login first.");
-      if (!name || !designation || !phone || !experience || !profilePicFile || !marksheetFile)
-        return alert("⚠ Please fill all fields and upload both files.");
+      if (!username) {
+        alert("❌ Please login first.");
+        return;
+      }
 
-      const reader1 = new FileReader();
-      const reader2 = new FileReader();
+      if (!name || !designation || !phone || !experience) {
+        alert("⚠ Please fill all fields.");
+        return;
+      }
 
-      reader1.onload = function () {
-        const profilePicData = reader1.result;
-
-        reader2.onload = function () {
-          const marksheetData = reader2.result;
-
-          const requestData = {
-            username,
-            name,
-            designation,
-            phone,
-            experience,
-            profilePic: profilePicData,
-            marksheet: marksheetData,
-            status: "pending",
-            timestamp: Date.now()
-          };
-
-          const oldData = JSON.parse(localStorage.getItem("membershipRequests") || "[]");
-          oldData.push(requestData);
-          localStorage.setItem("membershipRequests", JSON.stringify(oldData));
-
-          // Show confirmation
-          confirmationMsg.style.display = "block";
-          form.reset();
-
-          // Optional: Set notification & redirect
-          localStorage.setItem(username + "_notification", "✅ Membership request submitted. Wait for admin approval.");
-          setTimeout(() => {
-            window.location.href = "home.html";
-          }, 2000);
-        };
-
-        reader2.readAsDataURL(marksheetFile);
+      const requestData = {
+        username,
+        name,
+        designation,
+        phone,
+        experience,
+        status: "pending",
+        timestamp: Date.now()
       };
 
-      reader1.readAsDataURL(profilePicFile);
+      const oldRequests = JSON.parse(localStorage.getItem("membershipRequests") || "[]");
+      oldRequests.push(requestData);
+      localStorage.setItem("membershipRequests", JSON.stringify(oldRequests));
+
+      // Set notification + success message
+      localStorage.setItem(username + "_notification", "✅ Membership request submitted. Wait for admin approval.");
+      confirmationMsg.style.display = "block";
+      form.reset();
+
+      setTimeout(() => {
+        window.location.href = "home.html";
+      }, 2000);
     });
   </script>
 </body>
