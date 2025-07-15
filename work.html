@@ -53,6 +53,17 @@
       </table>
     </div>
   </div>
+  <script>
+  const currentUser = localStorage.getItem("loggedInUsername");
+  const approvedList = JSON.parse(localStorage.getItem("approvedMembers") || "[]");
+
+  const isApproved = approvedList.some(member => member.username === currentUser);
+
+  if (!isApproved) {
+    alert("❌ Membership not approved yet. Access denied.");
+    window.location.href = "home.html";
+  }
+</script>
 
   <script>
     const loggedInUser = localStorage.getItem("loggedInUsername") || "Unknown";
