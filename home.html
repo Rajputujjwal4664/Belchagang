@@ -324,5 +324,28 @@
     box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
   }
 </style>
+  <script>
+  const currentUser = localStorage.getItem("loggedInUsername");
+  const approved = JSON.parse(localStorage.getItem("approvedMembers") || "[]");
+  const isApproved = approved.some(member => member.username === currentUser);
+
+  // Disable restricted links
+  if (!isApproved) {
+    document.getElementById("chatLink").addEventListener("click", (e) => {
+      e.preventDefault();
+      alert("❌ Aapka membership abhi approve nahi hua. Access denied.");
+    });
+
+    const linksToRestrict = ["attendance.html", "work.html"];
+    document.querySelectorAll(".nav-links a").forEach(link => {
+      if (linksToRestrict.includes(link.getAttribute("href"))) {
+        link.addEventListener("click", (e) => {
+          e.preventDefault();
+          alert("❌ Aapka membership abhi approve nahi hua. Access denied.");
+        });
+      }
+    });
+  }
+</script>
 </body>
 </html>
