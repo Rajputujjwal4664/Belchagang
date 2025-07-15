@@ -87,10 +87,25 @@
   </div>
 
   <script>
+    // ✅ Step 1: Approval check
     const currentUser = localStorage.getItem("loggedInUsername");
+    const approvedMembers = JSON.parse(localStorage.getItem("approvedMembers") || "[]");
+
+    const isApproved = approvedMembers.some(member => member.username === currentUser);
+
+    if (!currentUser || !isApproved) {
+      alert("🚫 Aapka membership abhi tak approve nahi hua. Yeh page locked hai.");
+      window.location.href = "home.html";
+    }
+  </script>
+
+  <script>
+    // ✅ Step 2: Attendance logic
+    const username = localStorage.getItem("loggedInUsername");
     const today = new Date().toLocaleDateString("en-GB");
+
     const attendanceData = JSON.parse(localStorage.getItem("attendance") || "{}");
-    const userAttendance = attendanceData[currentUser] || [];
+    const userAttendance = attendanceData[username] || [];
 
     const markBtn = document.getElementById("markBtn");
     const statusText = document.getElementById("statusText");
@@ -105,11 +120,11 @@
     }
 
     function markAttendance() {
-      if (!attendanceData[currentUser]) {
-        attendanceData[currentUser] = [];
+      if (!attendanceData[username]) {
+        attendanceData[username] = [];
       }
 
-      attendanceData[currentUser].push(today);
+      attendanceData[username].push(today);
       localStorage.setItem("attendance", JSON.stringify(attendanceData));
 
       statusText.textContent = "✅ Attendance marked successfully!";
