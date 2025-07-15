@@ -86,6 +86,18 @@
 
   <br>
   <a href="home.html" class="back-btn">🔙 Back to Dashboard</a>
+  <script>
+  const currentUser = localStorage.getItem("loggedInUsername");
+  const approvedList = JSON.parse(localStorage.getItem("approvedMembers") || "[]");
+
+  const isApproved = approvedList.some(member => member.username === currentUser);
+
+  if (!isApproved) {
+    alert("❌ Membership not approved yet. Access denied.");
+    window.location.href = "home.html";
+  }
+</script>
+  
 
   <script>
     const chatBox = document.getElementById("chatBox");
