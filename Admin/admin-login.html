@@ -2,140 +2,99 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Request Membership</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Login - Belcha Gang</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: url('main-bg.jpg') no-repeat center center fixed;
-      background-size: cover;
-      color: white;
+      background-color: #111;
+      color: #fff;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
+      justify-content: center;
       height: 100vh;
     }
 
-    .form-container {
-      background: rgba(0, 0, 0, 0.85);
-      padding: 30px;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 450px;
-      box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
-      text-align: center;
+    h1 {
+      color: #ff3c3c;
     }
 
-    h2 {
-      margin-bottom: 20px;
-      color: #ff3c3c;
+    form {
+      background: #222;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
     }
 
     input {
-      width: 100%;
+      display: block;
+      margin: 15px 0;
       padding: 10px;
-      margin: 10px 0;
+      width: 250px;
       border: none;
       border-radius: 5px;
     }
 
-    .submit-btn {
+    button {
       background-color: #ff3c3c;
-      color: white;
-      font-weight: bold;
-      padding: 10px 20px;
+      color: #fff;
       border: none;
+      padding: 10px 20px;
+      font-weight: bold;
       border-radius: 5px;
       cursor: pointer;
-      margin-top: 10px;
     }
 
-    .submit-btn:hover {
+    button:hover {
       background-color: #c20000;
     }
 
-    .back-home {
-      display: block;
+    .back-link {
       margin-top: 20px;
-      text-decoration: none;
-      color: #ff3c3c;
-      font-weight: bold;
+      color: #ccc;
     }
 
-    .confirmation {
-      display: none;
-      text-align: center;
-      margin-top: 20px;
-      color: lightgreen;
+    .back-link a {
+      color: #ff3c3c;
+      text-decoration: none;
+    }
+
+    .back-link a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-  <div class="form-container">
-    <h2>Request Membership</h2>
-    <form id="membershipForm">
-      <input type="text" id="name" placeholder="Your Name" required />
-      <input type="text" id="designation" placeholder="Desired Designation" required />
-      <input type="tel" id="phone" placeholder="Phone Number" required />
-      <input type="number" id="experience" placeholder="Experience (in years)" min="0" required />
 
-      <button type="submit" class="submit-btn">Submit Request</button>
-    </form>
+  <h1>Admin Login</h1>
+  <form onsubmit="return adminLogin(event)">
+    <input type="text" id="admin-username" placeholder="Admin Username" required />
+    <input type="password" id="admin-password" placeholder="Password" required />
+    <button type="submit">Login</button>
+  </form>
 
-    <div class="confirmation" id="confirmationMsg">
-      ✅ Your request has been submitted. Please wait for admin approval.
-    </div>
-
-    <a href="home.html" class="back-home">⬅ Back to Home</a>
+  <div class="back-link">
+    <a href="../login.html">← Back to Member Login</a>
   </div>
 
   <script>
-    const form = document.getElementById('membershipForm');
-    const confirmationMsg = document.getElementById('confirmationMsg');
-
-    form.addEventListener('submit', function (e) {
+    function adminLogin(e) {
       e.preventDefault();
 
-      const username = localStorage.getItem("loggedInUsername");
-      const name = document.getElementById('name').value.trim();
-      const designation = document.getElementById('designation').value.trim();
-      const phone = document.getElementById('phone').value.trim();
-      const experience = document.getElementById('experience').value.trim();
+      const username = document.getElementById('admin-username').value.trim();
+      const password = document.getElementById('admin-password').value;
 
-      if (!username) {
-        alert("❌ Please login first before submitting membership request.");
-        return;
+      // Hardcoded admin credentials (you can later replace with Firebase)
+      if (username === "Belchagang" && password === "Ujjwal4664") {
+        // Redirect to admin panel
+        window.location.href = "admin.html";
+      } else {
+        alert("Invalid admin credentials");
       }
 
-      if (!name || !designation || !phone || !experience) {
-        alert("⚠ Please fill all fields.");
-        return;
-      }
-
-      const requestData = {
-        username,
-        name,
-        designation,
-        phone,
-        experience,
-        timestamp: Date.now()
-      };
-
-      const oldRequests = JSON.parse(localStorage.getItem("membershipRequests") || "[]");
-      oldRequests.push(requestData);
-      localStorage.setItem("membershipRequests", JSON.stringify(oldRequests));
-
-      // Set notification
-      localStorage.setItem(username + "_notification", "✅ Membership request submitted. Wait for admin approval.");
-
-      // Show message and redirect
-      confirmationMsg.style.display = "block";
-      form.reset();
-
-      setTimeout(() => {
-        window.location.href = "home.html";
-      }, 2000);
-    });
+      return false;
+    }
   </script>
 </body>
 </html>
