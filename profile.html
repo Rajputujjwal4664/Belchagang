@@ -121,55 +121,48 @@
     <button onclick="saveProfile()">Save Profile</button>
   </div>
 <script>
-  function saveProfile() {
-  const name = document.getElementById("nameInput").value;
-  userProfile.name = name;
-  localStorage.setItem("userProfile_" + currentUser, JSON.stringify(userProfile));
-  alert("Profile updated!");
-  window.location.href = "home.html"; // 👈 home pe redirect karega jisse updated photo dikh jaaye
-}
-</script>
-  <script>
-    const currentUser = localStorage.getItem("loggedInUsername");
-    if (!username) {
-      alert("Please login first.");
-      window.location.href = "index.html";
-    }
+  const currentUser = localStorage.getItem("loggedInUsername");
+  if (!currentUser) {
+    alert("Please login first.");
+    window.location.href = "index.html";
+  }
 
-    document.getElementById("username").value = username;
+  document.getElementById("username").value = currentUser;
 
-    // Assuming password is saved under userPassword_<email>
-    const password = localStorage.getItem("userPassword_" + username);
-    document.getElementById("passwordField").value = password || "";
+  const password = localStorage.getItem("userPassword_" + currentUser);
+  document.getElementById("passwordField").value = password || "";
 
-    const userProfile = JSON.parse(localStorage.getItem("userProfile_" + currentUser)) || {};
-    document.getElementById("nameInput").value = userProfile.name  || "";
-    if (userProfile.image) {
-      document.getElementById("profilePic").src = userProfile.image;
-    }
+  const userProfile = JSON.parse(localStorage.getItem("userProfile_" + currentUser)) || {};
 
-    document.getElementById("picInput").addEventListener("change", function (event) {
-      const reader = new FileReader();
-      reader.onload = function () {
-        document.getElementById("profilePic").src = reader.result;
-        userProfile.image = reader.result;
-localStorage.setItem("userProfile_" + currentUser, JSON.stringify(userProfile));
-      };
-      reader.readAsDataURL(event.target.files[0]);
-    });
+  document.getElementById("nameInput").value = userProfile.name || "";
 
-    function togglePassword() {
-      const field = document.getElementById("passwordField");
-      field.type = field.type === "password" ? "text" : "password";
-    }
+  if (userProfile.image) {
+    document.getElementById("profilePic").src = userProfile.image;
+  }
 
-    function saveProfile() {
-      const name = document.getElementById("nameInput").value;
-      userProfile.name = name;
+  document.getElementById("picInput").addEventListener("change", function (event) {
+    const reader = new FileReader();
+    reader.onload = function () {
+      document.getElementById("profilePic").src = reader.result;
+      userProfile.image = reader.result;
       localStorage.setItem("userProfile_" + currentUser, JSON.stringify(userProfile));
-      alert("Profile updated!");
-    }
-  </script>
+    };
+    reader.readAsDataURL(event.target.files[0]);
+  });
+
+  function togglePassword() {
+    const field = document.getElementById("passwordField");
+    field.type = field.type === "password" ? "text" : "password";
+  }
+
+  function saveProfile() {
+    const name = document.getElementById("nameInput").value;
+    userProfile.name = name;
+    localStorage.setItem("userProfile_" + currentUser, JSON.stringify(userProfile));
+    alert("Profile updated!");
+    window.location.href = "home.html"; // Go back to home after saving
+  }
+</script>
 <br>
 <a href="home.html" class="back-button">⬅ Back to Home</a>
 </body>
