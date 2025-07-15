@@ -101,51 +101,65 @@
   </div>
 
   <script>
-    const form = document.getElementById('membershipForm');
-    const confirmationMsg = document.getElementById('confirmationMsg');
+  const form = document.getElementById('membershipForm');
 
-    form.addEventListener('submit', function (e) {
-  e.preventDefault();
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
 
-  const name = document.getElementById('name').value.trim();
-  const designation = document.getElementById('designation').value.trim();
-  const phone = document.getElementById('phone').value.trim();
-  const experience = document.getElementById('experience').value.trim();
-  const profilePicFile = document.getElementById('profilePic').files[0];
-  const marksheetFile = document.getElementById('marksheet').files[0];
+    const name = document.getElementById('name').value.trim();
+    const designation = document.getElementById('designation').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const experience = document.getElementById('experience').value.trim();
+    const profilePicFile = document.getElementById('profilePic').files[0];
+    const marksheetFile = document.getElementById('marksheet').files[0];
+    const username = localStorage.getItem("loggedInUsername");
 
-  const reader1 = new FileReader();
-  const reader2 = new FileReader();
+    if (!username) {
+      alert("⚠ You must be logged in to submit a membership request.");
+      return;
+    }
 
-  reader1.onload = function () {
-    const profilePicData = reader1.result;
+    if (!profilePicFile || !marksheetFile) {
+      alert("⚠ Please upload both profile photo and marksheet.");
+      return;
+    }
 
-    reader2.onload = function () {
-      const marksheetData = reader2.result;
+    const reader1 = new FileReader();
+    const reader2 = new FileReader();
 
-      const requestData = {
-        name,
-        designation,
-        phone,
-        experience,
-        profilePic: profilePicData,
-        marksheet: marksheetData,
-        timestamp: Date.now()
+    reader1.onload = function () {
+      const profilePicData = reader1.result;
+
+      reader2.onload = function () {
+        const marksheetData = reader2.result;
+
+        const requestData = {
+          username,
+          name,
+          designation,
+          phone,
+          experience,
+          profilePic: profilePicData,
+          marksheet: marksheetData,
+          timestamp: Date.now()
+        };
+
+        const oldData = JSON.parse(localStorage.getItem("membershipRequests") || "[]");
+        oldData.push(requestData);
+        localStorage.setItem("membershipRequests", JSON.stringify(oldData));
+
+        // ✅ Save a notification to show on home page
+        localStorage.setItem(username + "_notification", "✅ Your membership request has been submitted. Please wait for admin approval.");
+
+        // ✅ Redirect to home.html
+        window.location.href = "home.html";
       };
 
-      const oldData = JSON.parse(localStorage.getItem("membershipRequests") || "[]");
-      oldData.push(requestData);
-      localStorage.setItem("membershipRequests", JSON.stringify(oldData));
-
-      confirmationMsg.style.display = 'block';
-      form.reset();
+      reader2.readAsDataURL(marksheetFile);
     };
 
-    reader2.readAsDataURL(marksheetFile);
-  };
-
-  reader1.readAsDataURL(profilePicFile);
-});
-  </script>
+    reader1.readAsDataURL(profilePicFile);
+  });
+</script>
 </body>
 </html>
