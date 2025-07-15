@@ -77,7 +77,7 @@
 </head>
 <body>
 
-  <div class="attendance-container" id="attendanceSection" style="display: none;">
+  <div class="attendance-container">
     <div class="gang-badge">📍</div>
     <h2>Belcha Attendance Zone</h2>
     <div class="status-message" id="statusText">Checking attendance...</div>
@@ -88,45 +88,34 @@
 
   <script>
     const currentUser = localStorage.getItem("loggedInUsername");
-    const approvedList = JSON.parse(localStorage.getItem("approvedMembers") || "[]");
+    const today = new Date().toLocaleDateString("en-GB");
+    const attendanceData = JSON.parse(localStorage.getItem("attendance") || "{}");
+    const userAttendance = attendanceData[currentUser] || [];
 
-    const isApproved = approvedList.some(member => member.username === currentUser);
+    const markBtn = document.getElementById("markBtn");
+    const statusText = document.getElementById("statusText");
 
-    if (!isApproved) {
-      alert("🚫 Aapka membership abhi tak approve nahi hua. Yeh page locked hai.");
-      window.location.href = "home.html";
+    if (userAttendance.includes(today)) {
+      statusText.textContent = "✅ Attendance already marked today!";
+      markBtn.disabled = true;
+      markBtn.classList.add("marked");
+      markBtn.textContent = "✔ Present";
     } else {
-      document.getElementById("attendanceSection").style.display = "block";
+      statusText.textContent = "📅 You haven’t marked attendance yet.";
+    }
 
-      const today = new Date().toLocaleDateString("en-GB");
-      const attendanceData = JSON.parse(localStorage.getItem("attendance") || "{}");
-      const userAttendance = attendanceData[currentUser] || [];
-
-      const markBtn = document.getElementById("markBtn");
-      const statusText = document.getElementById("statusText");
-
-      if (userAttendance.includes(today)) {
-        statusText.textContent = "✅ Attendance already marked today!";
-        markBtn.disabled = true;
-        markBtn.classList.add("marked");
-        markBtn.textContent = "✔ Present";
-      } else {
-        statusText.textContent = "📅 You haven’t marked attendance yet.";
+    function markAttendance() {
+      if (!attendanceData[currentUser]) {
+        attendanceData[currentUser] = [];
       }
 
-      window.markAttendance = function () {
-        if (!attendanceData[currentUser]) {
-          attendanceData[currentUser] = [];
-        }
+      attendanceData[currentUser].push(today);
+      localStorage.setItem("attendance", JSON.stringify(attendanceData));
 
-        attendanceData[currentUser].push(today);
-        localStorage.setItem("attendance", JSON.stringify(attendanceData));
-
-        statusText.textContent = "✅ Attendance marked successfully!";
-        markBtn.disabled = true;
-        markBtn.classList.add("marked");
-        markBtn.textContent = "✔ Present";
-      };
+      statusText.textContent = "✅ Attendance marked successfully!";
+      markBtn.disabled = true;
+      markBtn.classList.add("marked");
+      markBtn.textContent = "✔ Present";
     }
   </script>
 </body>
