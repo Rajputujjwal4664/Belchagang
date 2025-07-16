@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>💬 Belcha Gang Chat</title>
   <style>
     body {
@@ -9,15 +9,9 @@
       background-size: cover;
       color: #fff;
       font-family: Arial, sans-serif;
-      margin: 0;
       padding: 20px;
     }
-
-    h2 {
-      text-align: center;
-      color: #00ffff;
-    }
-
+    h2 { text-align: center; color: #00ffff; }
     #chatBox {
       background: #1a1a1a;
       padding: 20px;
@@ -27,32 +21,27 @@
       margin-bottom: 20px;
       box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
     }
-
-   .msg {
-  margin-bottom: 15px;
-  background-color: #222;
-  padding: 10px;
-  border-radius: 8px;
-  box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
-}
-
-.msg img {
-  max-width: 200px;
-  border-radius: 6px;
-  margin-top: 8px;
-  display: block;
-}
-
-.msg a {
-  color: #00ffff;
-  text-decoration: underline;
-  margin-top: 8px;
-  display: inline-block;
-  word-break: break-word;
-}
-
+    .msg {
+      margin-bottom: 15px;
+      background-color: #222;
+      padding: 10px;
+      border-radius: 8px;
+    }
+    .msg img {
+      max-width: 200px;
+      border-radius: 6px;
+      margin-top: 8px;
+      display: block;
+    }
+    .msg a {
+      color: #00ffff;
+      text-decoration: underline;
+      margin-top: 8px;
+      display: inline-block;
+      word-break: break-word;
+    }
     input[type="text"] {
-      width: 80%;
+      width: 60%;
       padding: 12px;
       font-size: 16px;
       border-radius: 5px;
@@ -60,7 +49,6 @@
       background: #333;
       color: white;
     }
-
     button {
       padding: 12px 20px;
       background-color: crimson;
@@ -70,122 +58,138 @@
       font-size: 16px;
       cursor: pointer;
     }
-
-    button:hover {
-      background-color: darkred;
-    }
-
     .back-btn {
-      display: inline-block;
       margin-top: 20px;
+      display: inline-block;
       padding: 10px 20px;
       background: #333;
       color: white;
       text-decoration: none;
       border-radius: 5px;
-      font-weight: bold;
-      transition: all 0.3s ease;
-    }
-
-    .back-btn:hover {
-      background-color: crimson;
-      color: #fff;
-      transform: scale(1.05);
     }
   </style>
 </head>
 <body>
 
-  <h2>💬 Belcha Gang Chat Room</h2>
+<h2>💬 Belcha Gang Chat Room</h2>
 
-  <div id="chatBox" style="height: 300px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;"></div>
+<div id="chatBox"></div>
 
-  <input type="text" id="chatInput" placeholder="Type your message..." style="width: 60%;" />
-  <input type="file" id="fileInput" />
-  <button onclick="sendMessage()">Send</button>
+<input type="text" id="chatInput" placeholder="Type your message..." />
+<input type="file" id="fileInput" />
+<button onclick="sendMessage()">Send</button>
 
-  <br>
-  <a href="home.html" class="back-btn">🔙 Back to Dashboard</a>
-  <script>
+<br>
+<a href="home.html" class="back-btn">🔙 Back to Dashboard</a>
+
+<!-- Firebase Scripts -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+
+<script>
+  // 🔥 Replace with your Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyCCx4QaXdzuUrZki39zJPZH9xXYUgmt2cY",
+    authDomain: "belcha-gang.firebaseapp.com",
+    databaseURL: "https://belcha-gang-default-rtdb.firebaseio.com",
+    projectId: "belcha-gang",
+    storageBucket: "belcha-gang.appspot.com",
+    messagingSenderId: "762357625552",
+    appId: "1:762357625552:web:8a47b837b19ea7ad0864d5"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  const storage = firebase.storage();
+
   const currentUser = localStorage.getItem("loggedInUsername");
-  const approvedList = JSON.parse(localStorage.getItem("approvedMembers") || "[]");
-
-  const isApproved = approvedList.some(member => member.username === currentUser);
-
-  if (!isApproved) {
-    alert("❌ Membership not approved yet. Access denied.");
-    window.location.href = "home.html";
-  }
-</script>
   <script>
-  const chatBox = document.getElementById("chatBox");
-  const input = document.getElementById("chatInput");
-  const fileInput = document.getElementById("fileInput");
+  const profilePics = {};
 
-  function sendMessage() {
-    const text = input.value.trim();
-    const file = fileInput.files[0];
-    const user = localStorage.getItem("loggedInUsername") || "Anonymous";
-    let messages = JSON.parse(localStorage.getItem("chatMessages") || "[]");
-
-    let message = { user };
-
-    if (text) {
-      message.text = text;
-    }
-
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        message.file = {
-          name: file.name,
-          url: e.target.result,
-          type: file.type
-        };
-        messages.push(message);
-        localStorage.setItem("chatMessages", JSON.stringify(messages));
-        input.value = "";
-        fileInput.value = "";
-        loadMessages();
-      };
-      reader.readAsDataURL(file);
-    } else {
-      if (!text) return;
-      messages.push(message);
-      localStorage.setItem("chatMessages", JSON.stringify(messages));
-      input.value = "";
-      fileInput.value = "";
-      loadMessages();
-    }
-  }
-
-  function loadMessages() {
-    const messages = JSON.parse(localStorage.getItem("chatMessages") || "[]");
-    chatBox.innerHTML = messages.map(m => {
-      let html = `<div class="msg">🗨 <b>${m.user}:</b> `;
-      if (m.text) html += ${m.text}<br>;
-      if (m.file) {
-        if (m.file.type.startsWith("image/")) {
-          html += <img src="${m.file.url}" style="max-width: 200px; border-radius: 6px; margin-top: 5px;"><br>;
-        } else {
-          html += <a href="${m.file.url}" download="${m.file.name}" style="color: lightblue;">📎 ${m.file.name}</a><br>;
-        }
+  firebase.database().ref("membershipRequests").once("value", snapshot => {
+    snapshot.forEach(child => {
+      const data = child.val();
+      if (data.username && data.profilePicURL) {
+        profilePics[data.username] = data.profilePicURL;
       }
-      html += </div>;
-      return html;
-    }).join("");
-    chatBox.scrollTop = chatBox.scrollHeight;
-  }
+    });
+    loadMessages(); // Only load messages after profile pics fetched
+  });
+</script>
 
-  input.addEventListener("keypress", function (e) {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      sendMessage();
+  // ✅ Only allow approved users
+  firebase.database().ref("approvedMembers").once("value", snapshot => {
+    const approved = snapshot.val() || {};
+    if (!approved[currentUser]) {
+      alert("❌ Membership not approved yet.");
+      window.location.href = "home.html";
     }
   });
 
-  window.onload = loadMessages;
-</script>
+  // 📨 Send Message
+  async function sendMessage() {
+    const input = document.getElementById("chatInput");
+    const file = document.getElementById("fileInput").files[0];
+    const msgText = input.value.trim();
 
+    if (!msgText && !file) return;
+
+    let messageData = {
+      user: currentUser,
+      timestamp: Date.now()
+    };
+
+    if (msgText) messageData.text = msgText;
+
+    if (file) {
+      const storageRef = storage.ref(chatFiles/${currentUser}_${Date.now()}_${file.name});
+      await storageRef.put(file);
+      const url = await storageRef.getDownloadURL();
+      messageData.file = {
+        name: file.name,
+        url: url,
+        type: file.type
+      };
+    }
+
+    db.ref("chatMessages").push(messageData);
+
+    input.value = "";
+    document.getElementById("fileInput").value = "";
+  }
+
+  // 📥 Load Messages
+ <script>
+  function loadMessages() {
+    firebase.database().ref("chatMessages").once("value", snapshot => {
+      const messages = [];
+      snapshot.forEach(child => messages.push(child.val()));
+
+      chatBox.innerHTML = messages.map(m => {
+        const picURL = profilePics[m.user] || "default.png"; // fallback image
+
+        let html = `
+          <div class="msg">
+            <img src="${picURL}" style="width: 35px; height: 35px; border-radius: 50%; vertical-align: middle; margin-right: 10px;">
+            <b>${m.user}:</b> `;
+
+        if (m.text) html += ${m.text}<br>;
+        if (m.file) {
+          if (m.file.type.startsWith("image/")) {
+            html += <img src="${m.file.url}" style="max-width: 200px; border-radius: 6px; margin-top: 5px;"><br>;
+          } else {
+            html += <a href="${m.file.url}" download="${m.file.name}" style="color: lightblue;">📎 ${m.file.name}</a><br>;
+          }
+        }
+
+        html += </div>;
+        return html;
+      }).join("");
+
+      chatBox.scrollTop = chatBox.scrollHeight;
+    });
+  }
+</script>
 </body>
 </html>
