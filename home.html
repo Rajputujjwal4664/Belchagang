@@ -130,15 +130,16 @@
     const today = new Date();
     document.getElementById("todayDate").innerText = `${String(today.getDate()).padStart(2,'0')}/${String(today.getMonth()+1).padStart(2,'0')}/${today.getFullYear()`};
 
-    db.ref('announcementData').on('value', snap => {
-      const box = document.getElementById("announcementBox");
-      const data = snap.val();
-      if (data && Array.isArray(data)) {
-        box.innerHTML = <p>${data.join(" 👉 ")}</p>;
-      } else {
-        box.innerHTML = <p>📭 No announcements yet.</p>;
-      }
-    });
+    const annBox = document.getElementById("announcementBox");
+
+db.ref("announcementData").on("value", snapshot => {
+  const data = snapshot.val();
+  if (data && Array.isArray(data) && data.length > 0) {
+    annBox.innerHTML = data.map(text => <p>📢 ${text}</p>).join("");
+  } else {
+    annBox.innerHTML = <p>📭 No announcements yet.</p>;
+  }
+});
 
     db.ref('thoughtOfTheDay').on('value', snap => {
       document.getElementById("thoughtBox").innerText = "🧠 Thought: " + (snap.val() || "No thought today.");
