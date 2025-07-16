@@ -8,7 +8,7 @@ body {
   color: #fff;
 }
 
-/* --- Navbar Container --- */
+/* --- Navbar --- */
 .navbar {
   background-color: rgba(0, 0, 0, 0.9);
   padding: 20px;
@@ -16,14 +16,12 @@ body {
   text-align: center;
 }
 
-/* --- Centered Heading --- */
 .navbar-header h1 {
   margin: 0;
   font-size: 32px;
   color: #ff3c3c;
 }
 
-/* --- Navigation Buttons Below Heading --- */
 .nav-links {
   margin-top: 15px;
   display: flex;
@@ -46,27 +44,30 @@ body {
   background-color: #c20000;
 }
 
-/* --- Logout Button (Top-Right) --- */
+/* --- Top-right (logout + profile) --- */
 .navbar-right {
   position: absolute;
   top: 20px;
-  right: 90px;
+  right: 30px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .logout-btn {
-  background-color: darkred;
+  background-color: crimson;
   color: white;
   padding: 8px 14px;
-  border-radius: 5px;
-  text-decoration: none;
+  border-radius: 6px;
   font-weight: bold;
+  text-decoration: none;
 }
 
 .logout-btn:hover {
-  background-color: crimson;
+  background-color: darkred;
 }
 
-/* --- Slider Section --- */
+/* --- Slider --- */
 .slider-section {
   background-color: rgba(0, 0, 0, 0.85);
   padding: 30px 0;
@@ -96,6 +97,8 @@ body {
   color: #ff3c3c;
   font-weight: bold;
 }
+
+/* --- Announcement & Date/Thought Section --- */
 .announcement-date-wrapper {
   display: flex;
   gap: 20px;
@@ -105,6 +108,7 @@ body {
   flex-wrap: wrap;
 }
 
+/* Announcement Box */
 .announcement-section {
   flex: 1;
   background: #1e1e1e;
@@ -113,6 +117,7 @@ body {
   position: relative;
   min-width: 300px;
   height: 200px;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
 }
 
 .announcement-header {
@@ -141,14 +146,23 @@ body {
 .announcement-marquee li {
   padding: 10px 0;
   border-bottom: 1px solid #333;
-  color: #fff;
+  color: white;
 }
 
+/* No announcements yet */
+.announcement-marquee .empty {
+  animation: scrollUp 10s linear infinite;
+  color: white;
+  text-align: center;
+}
+
+/* Scroll animation */
 @keyframes scrollUp {
   0% { transform: translateY(100%); }
   100% { transform: translateY(-100%); }
 }
 
+/* Date & Thought */
 .date-section {
   flex: 1;
   background: #1e1e1e;
@@ -156,12 +170,15 @@ body {
   border-radius: 10px;
   padding: 20px;
   min-width: 300px;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
 }
 
 .date-section h3,
 .date-section h4 {
   color: crimson;
 }
+
+/* Best Gang Member */
 .best-member-container {
   display: flex;
   background: #1a1a1a;
@@ -205,6 +222,20 @@ body {
   font-size: 18px;
   margin-bottom: 5px;
 }
+
+/* Gallery */
+.gallery-img {
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.gallery-img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px crimson;
+}
+
+/* Modal for enlarged gallery */
 .modal {
   display: none;
   position: fixed;
@@ -240,30 +271,4 @@ body {
 
 .close:hover {
   color: crimson;
-}
-
-.gallery-img {
-  border-radius: 10px;
-  cursor: pointer;
-  transition: transform 0.3s ease;
-}
-
-.gallery-img:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 10px crimson;
-}
-.navbar-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.logout-btn {
-  padding: 8px 14px;
-  background-color: crimson;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-weight: bold;
-  text-decoration: none;
 }
