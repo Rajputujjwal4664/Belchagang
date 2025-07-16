@@ -132,15 +132,21 @@
 <script>
   const username = localStorage.getItem("loggedInUsername");
 
-  // Load user data
+  // Load data on page load
   window.onload = () => {
+    if (!username) {
+      alert("⚠ User not logged in.");
+      window.location.href = "index.html";
+      return;
+    }
+
     db.ref("approvedMembers").once("value", snapshot => {
       const members = snapshot.val() || {};
       for (let key in members) {
         const user = members[key];
         if (user.username === username) {
-          document.getElementById("profileUsername").value = user.username || "";
-          document.getElementById("profilePassword").value = user.password || "";
+          document.getElementById("profileUsername").value = user.username;
+          document.getElementById("profilePassword").value = user.password;
           document.getElementById("nameInput").value = user.name || "";
           document.getElementById("profilePic").src = user.image || "https://via.placeholder.com/120";
           break;
@@ -149,49 +155,52 @@
     });
   };
 
-  // Toggle Password visibility
   function togglePassword() {
     const input = document.getElementById("profilePassword");
     input.type = input.type === "password" ? "text" : "password";
   }
 
-  // Update profile data
   function updateProfile() {
     const name = document.getElementById("nameInput").value.trim();
     const file = document.getElementById("photoInput").files[0];
-    const currentImage = document.getElementById("profilePic").src;
 
     if (!name) return alert("⚠ Name cannot be empty!");
 
-    function save(imageData) {
-      db.ref("approvedMembers").once("value", snap => {
-        const members = snap.val() || {};
-        for (let key in members) {
-          if (members[key].username === username) {
+    db.ref("approvedMembers").once("value", snap => {
+      const data = snap.val() || {};
+      for (let key in data) {
+        if (data[key].username === username) {
+          const updateUser = (imgData) => {
             db.ref("approvedMembers/" + key).update({
               name: name,
-              image: imageData
-            }, error => {
-              if (error) {
+              image: imgData
+            }, (err) => {
+              if (err) {
                 alert("❌ Failed to update profile.");
               } else {
-                alert("✅ Profile updated!");
+                alert("✅ Profile updated successfully!");
                 location.reload();
               }
             });
-            break;
-          }
-        }
-      });
-    }
+          };
 
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = e => save(e.target.result);
-      reader.readAsDataURL(file);
-    } else {
-      save(currentImage);
-    }
+          if (file) {
+            // Check for image file
+            if (!file.type.startsWith("image/")) {
+              alert("⚠ Only image files are allowed!");
+              return;
+            }
+            const reader = new FileReader();
+            reader.onload = (e) => updateUser(e.target.result);
+            reader.readAsDataURL(file);
+          } else {
+            updateUser(data[key].image); // keep old image if not uploading
+          }
+
+          break;
+        }
+      }
+    });
   }
 </script>
 
