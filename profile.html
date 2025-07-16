@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>👤 Profile - Belcha Gang</title>
+  <meta charset="UTF-8">
+  <title>👤 My Profile - Belcha Gang</title>
   <style>
     body {
-      background: #0f0f0f;
+      background: #111;
       color: white;
       font-family: 'Segoe UI', sans-serif;
       padding: 40px;
@@ -14,56 +14,40 @@
 
     .profile-container {
       background: #1c1c1c;
-      padding: 30px;
       border-radius: 12px;
+      padding: 30px;
       max-width: 500px;
       margin: auto;
-      box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+      box-shadow: 0 0 15px crimson;
     }
 
-    .profile-container h2 {
-      color: crimson;
-      margin-bottom: 30px;
-    }
-
-    .profile-pic {
+    img {
       width: 120px;
       height: 120px;
       border-radius: 50%;
       object-fit: cover;
+      margin-bottom: 10px;
       border: 3px solid crimson;
-      margin-bottom: 20px;
     }
 
-    .profile-field {
-      margin: 15px 0;
-      text-align: left;
-    }
-
-    .profile-field label {
-      display: block;
-      margin-bottom: 5px;
-      color: #ccc;
-    }
-
-    .profile-field input {
+    input, button {
       width: 100%;
-      padding: 10px;
-      border-radius: 6px;
-      border: 1px solid #444;
-      background: #111;
-      color: white;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: none;
       font-size: 16px;
+    }
+
+    input[type="file"] {
+      background: #333;
+      color: white;
     }
 
     button {
-      margin-top: 25px;
       background: crimson;
       color: white;
-      border: none;
-      padding: 12px 25px;
-      font-size: 16px;
-      border-radius: 6px;
+      font-weight: bold;
       cursor: pointer;
     }
 
@@ -71,138 +55,129 @@
       background: darkred;
     }
 
+    .readonly {
+      background: #2e2e2e;
+      color: #aaa;
+    }
+
     .back-btn {
       display: inline-block;
-      margin-top: 30px;
+      margin-top: 20px;
+      background: #333;
+      padding: 10px 20px;
       color: white;
       text-decoration: none;
-      font-weight: bold;
+      border-radius: 8px;
+    }
+
+    .toggle-eye {
+      position: relative;
+      float: right;
+      top: -38px;
+      right: 15px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
 
-<div class="profile-container">
-  <h2>👤 Your Profile</h2>
-  <img id="profilePic" class="profile-pic" src="https://via.placeholder.com/120" alt="Profile Picture">
-  <br />
-  <input type="file" id="photoInput" accept="image/*" style="margin-bottom: 20px;">
-
-  <div class="profile-field">
-    <label>Username:</label>
-    <input type="text" id="profileUsername" readonly>
-  </div>
-
-  <div class="profile-field">
-    <label>Password:</label>
-    <div style="display: flex; align-items: center;">
-      <input type="password" id="profilePassword" readonly style="flex: 1;">
-      <button type="button" onclick="togglePassword()" style="margin-left: 10px;">👁</button>
+  <div class="profile-container">
+    <h2>👤 My Profile</h2>
+    <img id="previewImg" src="https://via.placeholder.com/150" alt="Profile Image" />
+    <br>
+    <input type="file" id="photoInput" accept="image/*" />
+    
+    <input type="text" id="username" class="readonly" readonly placeholder="Username" />
+    
+    <div style="position: relative;">
+      <input type="password" id="password" class="readonly" readonly placeholder="Password" />
+      <span class="toggle-eye" onclick="togglePassword()">👁</span>
     </div>
+
+    <input type="text" id="name" placeholder="Enter Your Name" />
+
+    <button onclick="updateProfile()">✅ Update Profile</button>
+    <p id="msg" style="color: #0f0; font-weight: bold;"></p>
+
+    <a href="home.html" class="back-btn">🔙 Back to Home</a>
   </div>
 
-  <div class="profile-field">
-    <label>Name:</label>
-    <input type="text" id="nameInput" placeholder="Enter your name">
-  </div>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCCx4QaXdzuUrZki39zJPZH9xXYUgmt2cY",
+      authDomain: "belcha-gang.firebaseapp.com",
+      databaseURL: "https://belcha-gang-default-rtdb.firebaseio.com/",
+      projectId: "belcha-gang",
+      storageBucket: "belcha-gang.appspot.com",
+      messagingSenderId: "762357625552",
+      appId: "1:762357625552:web:8a47b837b19ea7ad0864d5"
+    };
 
-  <button onclick="updateProfile()">💾 Update Profile</button>
-  <br>
-  <a href="home.html" class="back-btn">🔙 Back to Dashboard</a>
-</div>
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyCCx4QaXdzuUrZki39zJPZH9xXYUgmt2cY",
-    authDomain: "belcha-gang.firebaseapp.com",
-    databaseURL: "https://belcha-gang-default-rtdb.firebaseio.com/",
-    projectId: "belcha-gang",
-    storageBucket: "belcha-gang.appspot.com",
-    messagingSenderId: "762357625552",
-    appId: "1:762357625552:web:8a47b837b19ea7ad0864d5"
-  };
+    const currentUser = localStorage.getItem("loggedInUsername");
 
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-</script>
+    // Load profile data
+    window.onload = function () {
+      db.ref("approvedMembers").once("value").then(snapshot => {
+        const data = snapshot.val();
+        for (let key in data) {
+          if (data[key].username === currentUser) {
+            const user = data[key];
+            document.getElementById("username").value = user.username;
+            document.getElementById("password").value = user.password || "";
+            document.getElementById("name").value = user.name;
+            document.getElementById("previewImg").src = user.image || "https://via.placeholder.com/150";
+            break;
+          }
+        }
+      });
+    };
 
-<script>
-  const username = localStorage.getItem("loggedInUsername");
-
-  // Load data on page load
-  window.onload = () => {
-    if (!username) {
-      alert("⚠ User not logged in.");
-      window.location.href = "index.html";
-      return;
+    function togglePassword() {
+      const input = document.getElementById("password");
+      input.type = input.type === "password" ? "text" : "password";
     }
 
-    db.ref("approvedMembers").once("value", snapshot => {
-      const members = snapshot.val() || {};
-      for (let key in members) {
-        const user = members[key];
-        if (user.username === username) {
-          document.getElementById("profileUsername").value = user.username;
-          document.getElementById("profilePassword").value = user.password;
-          document.getElementById("nameInput").value = user.name || "";
-          document.getElementById("profilePic").src = user.image || "https://via.placeholder.com/120";
-          break;
-        }
-      }
-    });
-  };
+    // Update profile
+    function updateProfile() {
+      const name = document.getElementById("name").value.trim();
+      const file = document.getElementById("photoInput").files[0];
+      if (!name) return alert("Name can't be empty.");
 
-  function togglePassword() {
-    const input = document.getElementById("profilePassword");
-    input.type = input.type === "password" ? "text" : "password";
-  }
-
-  function updateProfile() {
-    const name = document.getElementById("nameInput").value.trim();
-    const file = document.getElementById("photoInput").files[0];
-
-    if (!name) return alert("⚠ Name cannot be empty!");
-
-    db.ref("approvedMembers").once("value", snap => {
-      const data = snap.val() || {};
-      for (let key in data) {
-        if (data[key].username === username) {
-          const updateUser = (imgData) => {
-            db.ref("approvedMembers/" + key).update({
-              name: name,
-              image: imgData
-            }, (err) => {
-              if (err) {
-                alert("❌ Failed to update profile.");
-              } else {
-                alert("✅ Profile updated successfully!");
-                location.reload();
-              }
-            });
-          };
-
-          if (file) {
-            // Check for image file
-            if (!file.type.startsWith("image/")) {
-              alert("⚠ Only image files are allowed!");
-              return;
+      const updateUser = (base64Image) => {
+        db.ref("approvedMembers").once("value", snap => {
+          const users = snap.val();
+          for (let key in users) {
+            if (users[key].username === currentUser) {
+              db.ref("approvedMembers/" + key).update({
+                name: name,
+                image: base64Image || users[key].image
+              });
+              document.getElementById("msg").innerText = "✅ Profile updated!";
+              break;
             }
-            const reader = new FileReader();
-            reader.onload = (e) => updateUser(e.target.result);
-            reader.readAsDataURL(file);
-          } else {
-            updateUser(data[key].image); // keep old image if not uploading
           }
+        });
+      };
 
-          break;
-        }
+      if (file && file.type.startsWith("image/")) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const base64 = e.target.result;
+          document.getElementById("previewImg").src = base64;
+          updateUser(base64);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        updateUser(null);
       }
-    });
-  }
-</script>
+    }
+  </script>
 
 </body>
 </html>
