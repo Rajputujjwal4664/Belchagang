@@ -106,12 +106,29 @@
 
   <a href="admin.html" class="back-btn">🔙 Back to Admin Panel</a>
 
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCCx4QaXdzuUrZki39zJPZH9xXYUgmt2cY",
+      authDomain: "belcha-gang.firebaseapp.com",
+      databaseURL: "https://belcha-gang-default-rtdb.firebaseio.com/",
+      projectId: "belcha-gang",
+      storageBucket: "belcha-gang.firebasestorage.app",
+      messagingSenderId: "762357625552",
+      appId: "1:762357625552:web:8a47b837b19ea7ad0864d5"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const galleryRef = db.ref("belchaGallery");
+
     const galleryInput = document.getElementById("galleryInput");
     const preview = document.getElementById("galleryPreview");
-    let galleryImages = JSON.parse(localStorage.getItem("belchaGallery") || "[]");
+    let galleryImages = [];
 
-    // Load existing images
+    // Load gallery from DB
     function renderGallery() {
       preview.innerHTML = "";
       galleryImages.forEach((src, index) => {
@@ -128,7 +145,7 @@
     // Remove image
     function removeImage(index) {
       galleryImages.splice(index, 1);
-      localStorage.setItem("belchaGallery", JSON.stringify(galleryImages));
+      galleryRef.set(galleryImages);
       renderGallery();
     }
 
@@ -139,14 +156,18 @@
         const reader = new FileReader();
         reader.onload = function (e) {
           galleryImages.push(e.target.result);
-          localStorage.setItem("belchaGallery", JSON.stringify(galleryImages));
+          galleryRef.set(galleryImages);
           renderGallery();
         };
         reader.readAsDataURL(file);
       });
     });
 
-    renderGallery();
+    // Fetch existing images from DB
+    galleryRef.on("value", snapshot => {
+      galleryImages = snapshot.val() || [];
+      renderGallery();
+    });
   </script>
 
 </body>
