@@ -86,88 +86,74 @@
   <a href="home.html" class="back-link">⬅ Back to Home</a>
 </div>
 
-<!-- ✅ Firebase SDK -->
+<!-- Add Firebase SDKs before this -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
 <script>
-  // ✅ Your Firebase config
+  // ✅ Replace with your own config
   const firebaseConfig = {
     apiKey: "AIzaSyCCx4QaXdzuUrZki39zJPZH9xXYUgmt2cY",
     authDomain: "belcha-gang.firebaseapp.com",
-    databaseURL: "https://belcha-gang-default-rtdb.firebaseio.com",
+    databaseURL: "https://belcha-gang-default-rtdb.firebaseio.com/",
     projectId: "belcha-gang",
     storageBucket: "belcha-gang.appspot.com",
     messagingSenderId: "762357625552",
     appId: "1:762357625552:web:8a47b837b19ea7ad0864d5"
   };
 
-  // ✅ Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
-</script>
 
-<script>
   const currentUser = localStorage.getItem("loggedInUsername");
+  const today = new Date().toLocaleDateString("en-GB");
+
+  const markBtn = document.getElementById("markBtn");
+  const statusText = document.getElementById("statusText");
 
   if (!currentUser) {
-    alert("❌ Please login first.");
-    window.location.href = "index.html";
+    alert("❌ Login required.");
+    window.location.href = "home.html";
   }
 
-  db.ref("approvedMembers").once("value")
-    .then(snapshot => {
-      let approved = false;
-      snapshot.forEach(child => {
-        const user = child.val();
-        if (user.username === currentUser) {
-          approved = true;
+  // ✅ Check approval from Firebase
+  db.ref("approvedMembers").once("value").then(snapshot => {
+    const approvedList = snapshot.val() || {};
+    const userApproved = Object.values(approvedList).some(member => member.username === currentUser);
+
+    if (!userApproved) {
+      alert("🚫 Aapka membership abhi tak approve nahi hua. Yeh page locked hai.");
+      window.location.href = "home.html";
+    } else {
+      // ✅ Load attendance if approved
+      db.ref(attendance/${currentUser}).once("value").then(snap => {
+        const data = snap.val() || [];
+        if (data.includes(today)) {
+          statusText.textContent = "✅ Attendance already marked today!";
+          markBtn.disabled = true;
+          markBtn.classList.add("marked");
+          markBtn.textContent = "✔ Present";
+        } else {
+          statusText.textContent = "📅 You haven’t marked attendance yet.";
         }
       });
+    }
+  });
 
-      if (!approved) {
-        alert("🚫 Aapka membership abhi tak approve nahi hua.");
-        window.location.href = "home.html";
-      } else {
-        document.getElementById("mainContainer").style.display = "block";
-        loadAttendance(); // 👇 call the attendance logic
+  // ✅ Mark Attendance
+  function markAttendance() {
+    db.ref(attendance/${currentUser}).once("value").then(snap => {
+      const data = snap.val() || [];
+      if (!data.includes(today)) {
+        data.push(today);
+        db.ref(attendance/${currentUser}).set(data).then(() => {
+          statusText.textContent = "✅ Attendance marked successfully!";
+          markBtn.disabled = true;
+          markBtn.classList.add("marked");
+          markBtn.textContent = "✔ Present";
+        });
       }
-    })
-    .catch(error => {
-      console.error("Error checking approval:", error);
-      alert("⚠ Unable to verify approval. Try again later.");
     });
-
-  function loadAttendance() {
-    const today = new Date().toLocaleDateString("en-GB");
-    const attendanceData = JSON.parse(localStorage.getItem("attendance") || "{}");
-    const userAttendance = attendanceData[currentUser] || [];
-
-    const markBtn = document.getElementById("markBtn");
-    const statusText = document.getElementById("statusText");
-
-    if (userAttendance.includes(today)) {
-      statusText.textContent = "✅ Attendance already marked today!";
-      markBtn.disabled = true;
-      markBtn.classList.add("marked");
-      markBtn.textContent = "✔ Present";
-    } else {
-      statusText.textContent = "📅 You haven’t marked attendance yet.";
-    }
-
-    window.markAttendance = function () {
-      if (!attendanceData[currentUser]) {
-        attendanceData[currentUser] = [];
-      }
-
-      attendanceData[currentUser].push(today);
-      localStorage.setItem("attendance", JSON.stringify(attendanceData));
-
-      statusText.textContent = "✅ Attendance marked successfully!";
-      markBtn.disabled = true;
-      markBtn.classList.add("marked");
-      markBtn.textContent = "✔ Present";
-    }
   }
 </script>
 </body>
