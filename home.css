@@ -287,15 +287,13 @@ body {
   box-shadow: 0 0 8px crimson;
 }
 .about-us {
-  background: #1e1e1e;
-  color: white;
+  background: #1a1a1a;
   padding: 30px;
-  margin: 60px auto;
-  border-radius: 12px;
+  margin: 40px auto;
   max-width: 1000px;
+  border-radius: 15px;
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); /* 🔴 Red shadow */
   text-align: center;
-  box-shadow: 0 0 20px rgba(255, 0, 0, 0.4); /* 🔥 Red shadow */
-  transition: box-shadow 0.3s ease;
 }
 
 .about-us h2 {
