@@ -76,6 +76,24 @@
       0% { opacity: 0; transform: translateY(-20px); }
       100% { opacity: 1; transform: translateY(0); }
     }
+
+    .back-btn {
+      display: inline-block;
+      padding: 10px 20px;
+      margin-top: 20px;
+      background-color: #333;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+    }
+
+    .back-btn:hover {
+      background-color: crimson;
+      color: #fff;
+      transform: scale(1.05);
+    }
   </style>
 </head>
 <body>
@@ -87,49 +105,55 @@
     <textarea id="thoughtInput" placeholder="e.g. Loyalty is the real strength..."></textarea>
     <br>
     <button onclick="saveThought()">💾 Save Thought</button>
-<br><br>
-<a href="admin.html" class="back-btn">🔙 Back to Admin Panel</a>
-
-<style>
-  .back-btn {
-    display: inline-block;
-    padding: 10px 20px;
-    margin-top: 20px;
-    background-color: #333;
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-    border-radius: 5px;
-    transition: all 0.3s ease;
-  }
-
-  .back-btn:hover {
-    background-color: crimson;
-    color: #fff;
-    transform: scale(1.05);
-  }
-</style>
+    <br><br>
+    <a href="admin.html" class="back-btn">🔙 Back to Admin Panel</a>
 
     <div id="successMsg" class="success-message">✅ Thought saved successfully!</div>
   </div>
 
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <script>
-   function saveThought() {
-  const input = document.getElementById("thoughtInput").value.trim();
-  if (input) {
-    localStorage.setItem("thoughtOfTheDay", input);
-    document.getElementById("successMsg").style.display = "block";
-    alert("✅ Thought updated successfully!");
-  } else {
-    alert("⚠ Thought cannot be empty!");
-  }
-}
-    // Load previous thought if exists
-    window.onload = function () {
-      const saved = localStorage.getItem("thoughtOfTheDay");
-      if (saved) {
-        document.getElementById("thoughtInput").value = saved;
+    const firebaseConfig = {
+      apiKey: "AIzaSyCCx4QaXdzuUrZki39zJPZH9xXYUgmt2cY",
+      authDomain: "belcha-gang.firebaseapp.com",
+      databaseURL: "https://belcha-gang-default-rtdb.firebaseio.com/",
+      projectId: "belcha-gang",
+      storageBucket: "belcha-gang.firebasestorage.app",
+      messagingSenderId: "762357625552",
+      appId: "1:762357625552:web:8a47b837b19ea7ad0864d5"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const thoughtRef = db.ref("thoughtOfTheDay");
+
+    function saveThought() {
+      const input = document.getElementById("thoughtInput").value.trim();
+      if (input) {
+        thoughtRef.set(input)
+          .then(() => {
+            document.getElementById("successMsg").style.display = "block";
+            alert("✅ Thought updated successfully!");
+          })
+          .catch(err => {
+            alert("❌ Error saving thought.");
+            console.error(err);
+          });
+      } else {
+        alert("⚠ Thought cannot be empty!");
       }
+    }
+
+    // Load previous thought from Firebase
+    window.onload = function () {
+      thoughtRef.once("value").then(snapshot => {
+        const thought = snapshot.val();
+        if (thought) {
+          document.getElementById("thoughtInput").value = thought;
+        }
+      });
     };
   </script>
 
