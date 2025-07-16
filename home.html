@@ -14,15 +14,56 @@
       authDomain: "belcha-gang.firebaseapp.com",
       databaseURL: "https://belcha-gang-default-rtdb.firebaseio.com/",
       projectId: "belcha-gang",
-      storageBucket: "belcha-gang.firebasestorage.app",
+      storageBucket: "belcha-gang.appspot.com",
       messagingSenderId: "762357625552",
       appId: "1:762357625552:web:8a47b837b19ea7ad0864d5"
-    };firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
   </script>
+  <style>
+    .section-highlight {
+      background: #1f1f1f;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(255, 0, 0, 0.4);
+    }
+    .announcement-scroll {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+    .announcement-scroll p {
+      position: absolute;
+      white-space: nowrap;
+      animation: scroll 10s linear infinite;
+      color: #0f0;
+      font-weight: bold;
+    }
+    @keyframes scroll {
+      0% { left: 100%; }
+      100% { left: -100%; }
+    }
+    .about-us {
+      background: #1e1e1e;
+      padding: 40px;
+      text-align: center;
+      margin-top: 40px;
+      border-radius: 10px;
+    }
+    .about-us h2 {
+      color: crimson;
+      margin-bottom: 10px;
+    }
+    .about-us p {
+      color: #ccc;
+      font-size: 16px;
+    }
+  </style>
 </head>
 <body>
+  <!-- Navbar -->
   <div class="navbar">
     <div class="navbar-header">
       <h1>Belcha Gang Dashboard</h1>
@@ -35,31 +76,34 @@ const db = firebase.database();
       <a href="request.html">Request Membership</a>
     </div>
     <div class="navbar-right" style="position: absolute; top: 20px; right: 90px; display: flex; align-items: center;">
+      <a href="profile.html"><img id="profilePhotoHome" src="" style="width:40px;height:40px;border-radius:50%;margin-right:15px;border:2px solid white;"/></a>
       <a href="index.html" class="logout-btn">Logout</a>
     </div>
-  </div>  <div class="slider-section">
+  </div>  <!-- Swiper Slider -->  <div class="slider-section">
     <div class="swiper mySwiper">
       <div class="swiper-wrapper" id="sliderWrapper"></div>
       <div class="swiper-pagination"></div>
     </div>
-  </div>  <div style="text-align: center; margin-top: 30px;">
+  </div>  <!-- Welcome Message -->  <div style="text-align: center; margin-top: 30px;">
     <h2 style="font-size: 30px; color: crimson; animation: bounce 2s infinite;">🔥 Welcome to Belcha Gang! 🔥</h2>
-  </div>  <div style="text-align: center; margin: 20px auto; font-size: 18px; font-style: italic; color: #f5f5f5;">
+  </div>  <!-- Quote -->  <div style="text-align: center; margin: 20px auto; font-size: 18px; font-style: italic; color: #f5f5f5;">
     <marquee behavior="alternate" scrollamount="4" style="width: 80%; color: #00FF00; font-weight: bold;">
       "Unity is our strength, Belcha is our weapon 💪"
     </marquee>
-  </div>  <div style="display: flex; justify-content: space-between; gap: 20px; margin: 30px auto; max-width: 95%;">
-    <div class="section-highlight card" style="flex: 1; position:relative;">
+  </div>  <!-- Announcements & Thought -->  <div style="display: flex; justify-content: space-between; gap: 20px; margin: 30px auto; max-width: 95%;">
+    <div class="section-highlight" style="flex: 1; position:relative; height: 150px;">
       <h3 style="position: absolute; top: 10px; left: 20px; color: crimson;">📢 Announcements</h3>
-      <div style="margin-top: 40px; height: 120px; overflow: auto; padding: 10px;" id="announcementBox">
-        <p style="color: #ccc; font-style: italic;">📭 No announcements yet.</p>
+      <div style="margin-top: 40px; height: 100px; overflow: hidden;">
+        <div class="announcement-scroll" id="announcementBox">
+          <p>📭 No announcements yet.</p>
+        </div>
       </div>
     </div>
-    <div class="section-highlight card" style="flex: 1;">
+    <div class="section-highlight" style="flex: 1;">
       <h3 style="color: crimson;">📅 Today: <span id="todayDate"></span></h3>
-      <p id="thoughtBox" style="margin-top: 20px; font-style: italic; color: #ccc;">🧠 Thought: "Loading..."</p>
+      <p id="thoughtBox" style="margin-top: 20px;">🧠 Thought: ...</p>
     </div>
-  </div>  <div style="margin: 40px auto; max-width: 95%; text-align: center;">
+  </div>  <!-- Best Member -->  <div style="margin: 40px auto; max-width: 95%; text-align: center;">
     <h2 style="color: gold;">🏆 Best Gang Member of the Month</h2>
     <div class="best-member-container">
       <div class="best-member-photo">
@@ -73,24 +117,25 @@ const db = firebase.database();
         <p id="bestReason"></p>
       </div>
     </div>
-  </div>  <div style="margin: 40px auto; max-width: 95%;">
+  </div>  <!-- Gallery -->  <div style="margin: 40px auto; max-width: 95%;">
     <h2 style="text-align: center; color: #00ffff;">📷 Belcha Gang Gallery</h2>
     <div id="galleryContainer" class="gallery-section" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-top: 20px;"></div>
-  </div>  <div class="about-us">
+  </div>  <!-- About Us -->  <div class="about-us">
     <h2>About Us</h2>
     <p>We are the Belcha Gang – a passionate, united, and powerful brotherhood committed to teamwork, trust, and building amazing things together.</p>
-  </div>  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>  <script>
+  </div>  <!-- SwiperJS -->  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>  <script>
     const currentUser = localStorage.getItem("loggedInUsername");
+
     const today = new Date();
     document.getElementById("todayDate").innerText = ${String(today.getDate()).padStart(2,'0')}/${String(today.getMonth()+1).padStart(2,'0')}/${today.getFullYear()};
 
     db.ref('announcementData').on('value', snap => {
       const box = document.getElementById("announcementBox");
       const data = snap.val();
-      if (Array.isArray(data) && data.length > 0) {
-        box.innerHTML = data.map(a => <p>➡ ${a}</p>).join('');
+      if (data && Array.isArray(data)) {
+        box.innerHTML = <p>${data.join(" 👉 ")}</p>;
       } else {
-        box.innerHTML = <p style="color: #ccc; font-style: italic;">📭 No announcements yet.</p>;
+        box.innerHTML = <p>📭 No announcements yet.</p>;
       }
     });
 
@@ -119,6 +164,9 @@ const db = firebase.database();
         slide.classList.add("swiper-slide");
         slide.innerHTML = <img src="${m.image}" /><h3>${m.name} - ${m.designation}</h3>;
         wrapper.appendChild(slide);
+        if (m.username === currentUser) {
+          document.getElementById("profilePhotoHome").src = m.image;
+        }
       });
       new Swiper(".mySwiper", {
         slidesPerView: 1,
