@@ -1,7 +1,8 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html><html>
 <head>
   <title>Admin - Mark Attendance</title>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <style>
     body {
       background: #121212;
@@ -44,59 +45,68 @@
     }
   </style>
 </head>
-<body>
+<body><h2>🗓 Admin Panel - Mark Attendance</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Designation</th>
+      <th>Status</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody id="adminAttendanceBody">
+  </tbody>
+</table><script>
+  // Firebase Config
+  const firebaseConfig = {
+    apiKey: "AIzaSyCCx4QaXdzuUrZki39zJPZH9xXYUgmt2cY",
+    authDomain: "belcha-gang.firebaseapp.com",
+    databaseURL: "https://belcha-gang-default-rtdb.firebaseio.com",
+    projectId: "belcha-gang",
+    storageBucket: "belcha-gang.appspot.com",
+    messagingSenderId: "762357625552",
+    appId: "1:762357625552:web:8a47b837b19ea7ad0864d5"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
 
-  <h2>🗓 Admin Panel - Mark Attendance</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Designation</th>
-        <th>Status</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody id="adminAttendanceBody">
-    </tbody>
-  </table>
+  const today = new Date().toLocaleDateString("en-GB");
+  const tbody = document.getElementById("adminAttendanceBody");
 
-  <script>
-    const today = new Date().toLocaleDateString("en-GB");
-    const approved = JSON.parse(localStorage.getItem("approvedMembers") || "[]");
-    const attendance = JSON.parse(localStorage.getItem("attendanceRecords") || "{}");
+  db.ref("approvedMembers").once("value", snapshot => {
+    const members = snapshot.val();
+    if (members) {
+      Object.keys(members).forEach(key => {
+        const member = members[key];
+        const name = member.name;
+        const desig = member.designation;
 
-    if (!attendance[today]) attendance[today] = {};
+        db.ref(attendanceRecords/${today}/${name}).once("value", snap => {
+          const status = snap.val() || "Not Marked";
 
-    const tbody = document.getElementById("adminAttendanceBody");
-
-    approved.forEach(member => {
-      const name = member.name;
-      const desig = member.designation;
-      const status = attendance[today][name] || "Not Marked";
-
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${name}</td>
-        <td>${desig}</td>
-        <td id="status-${name}">${status}</td>
-        <td>
-          <button class="present-btn" onclick="mark('${name}', 'Present')">Present</button>
-          <button class="absent-btn" onclick="mark('${name}', 'Absent')">Absent</button>
-        </td>
-      `;
-      tbody.appendChild(row);
-    });
-
-    function mark(name, status) {
-      attendance[today][name] = status;
-      localStorage.setItem("attendanceRecords", JSON.stringify(attendance));
-      document.getElementById("status-" + name).innerText = status;
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${name}</td>
+            <td>${desig}</td>
+            <td id="status-${name}">${status}</td>
+            <td>
+              <button class="present-btn" onclick="mark('${name}', 'Present')">Present</button>
+              <button class="absent-btn" onclick="mark('${name}', 'Absent')">Absent</button>
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+      });
     }
-  </script>
-<br>
-<a href="admin.html" class="back-btn">🔙 Back to Admin Panel</a>
+  });
 
-<style>
+  function mark(name, status) {
+    db.ref(attendanceRecords/${today}/${name}).set(status);
+    document.getElementById("status-" + name).innerText = status;
+  }
+</script><br>
+<a href="admin.html" class="back-btn">🔙 Back to Admin Panel</a><style>
   .back-btn {
     display: inline-block;
     margin-top: 20px;
@@ -114,6 +124,5 @@
     color: #fff;
     transform: scale(1.05);
   }
-</style>
-</body>
+</style></body>
 </html>
