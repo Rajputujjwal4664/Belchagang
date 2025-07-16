@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -11,34 +10,28 @@
       color: #fff;
       padding: 30px;
     }
-
     h1 {
       text-align: center;
       color: #ff3c3c;
       margin-bottom: 40px;
     }
-
     table {
       width: 100%;
       border-collapse: collapse;
       background: #1e1e1e;
     }
-
     th, td {
       padding: 15px;
       text-align: center;
       border: 1px solid #444;
     }
-
     th {
       background: #ff3c3c;
       color: #fff;
     }
-
     tr:hover {
       background: #2a2a2a;
     }
-
     button {
       padding: 7px 15px;
       border: none;
@@ -46,22 +39,18 @@
       cursor: pointer;
       font-weight: bold;
     }
-
     .approve {
       background: green;
       color: white;
     }
-
     .reject {
       background: darkred;
       color: white;
     }
-
     .designation-input {
       width: 120px;
       padding: 5px;
     }
-
     .logout-link {
       position: absolute;
       top: 20px;
@@ -72,26 +61,23 @@
       text-decoration: none;
       border-radius: 5px;
     }
-
     .logout-link:hover {
       background-color: #ff0000;
     }
   </style>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 </head>
-<body>
+<body><a class="logout-link" href="../index.html">Logout</a>
 
-  <a class="logout-link" href="../index.html">Logout</a>
   <h1>Belcha Gang - Admin Panel</h1>
-<!-- 🔧 Admin Navigation -->
-<div style="margin: 20px 0; background: #1a1a1a; border-radius: 8px; padding: 15px 25px; display: flex; justify-content: center; gap: 40px; box-shadow: 0 0 10px rgba(255, 0, 0, 0.4); border-left: 5px solid crimson;">
-  <a href="admin-attendance.html" style="color: #fff; text-decoration: none; font-weight: bold;">📅 Mark Attendance</a>
-  <a href="announcement-update.html" style="color: #fff; text-decoration: none; font-weight: bold;">📢 Update Announcements</a>
-  <a href="thought-update.html" style="color: #fff; text-decoration: none; font-weight: bold;">💭 Update Thought</a>
-  <a href="best-member.html" style="color: #fff; text-decoration: none; font-weight: bold;">🏆 Best Gang Member</a>
-  <a href="gallery-update.html" style="color: #fff; text-decoration: none; font-weight: bold;">🖼 Gallery Control</a>
-</div>
-
-  <table id="requestTable">
+  <div style="margin: 20px 0; background: #1a1a1a; border-radius: 8px; padding: 15px 25px; display: flex; justify-content: center; gap: 40px; box-shadow: 0 0 10px rgba(255, 0, 0, 0.4); border-left: 5px solid crimson;">
+    <a href="admin-attendance.html" style="color: #fff; text-decoration: none; font-weight: bold;">📅 Mark Attendance</a>
+    <a href="announcement-update.html" style="color: #fff; text-decoration: none; font-weight: bold;">📢 Update Announcements</a>
+    <a href="thought-update.html" style="color: #fff; text-decoration: none; font-weight: bold;">💭 Update Thought</a>
+    <a href="best-member.html" style="color: #fff; text-decoration: none; font-weight: bold;">🏆 Best Gang Member</a>
+    <a href="gallery-update.html" style="color: #fff; text-decoration: none; font-weight: bold;">🖼 Gallery Control</a>
+  </div>  <table id="requestTable">
     <thead>
       <tr>
         <th>Name</th>
@@ -105,73 +91,82 @@
     <tbody id="requestBody">
       <!-- Membership requests will load here -->
     </tbody>
-  </table>
+  </table>  <script>
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      databaseURL: "YOUR_DATABASE_URL",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
 
-  <script>
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
     const tbody = document.getElementById("requestBody");
-    const pendingRequests = JSON.parse(localStorage.getItem("membershipRequests") || "[]");
 
-    if (pendingRequests.length === 0) {
-      const tr = document.createElement("tr");
-      const td = document.createElement("td");
-      td.colSpan = 6;
-      td.style.textAlign = "center";
-      td.textContent = "📭 No pending requests";
-      tr.appendChild(td);
-      tbody.appendChild(tr);
-    } else {
-      pendingRequests.forEach((req, index) => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${req.name}</td>
-          <td>${req.designation}</td>
-          <td>${req.phone}</td>
-          <td>${req.experience}</td>
-          <td><input type="text" value="${req.designation}" class="designation-input" /></td>
-          <td>
-            <button class="approve" data-index="${index}">Approve</button>
-            <button class="reject" data-index="${index}">Reject</button>
-          </td>
-        `;
-        tbody.appendChild(row);
+    function loadRequests() {
+      db.ref("membershipRequests").once("value", snapshot => {
+        const data = snapshot.val();
+        if (!data) {
+          const tr = document.createElement("tr");
+          const td = document.createElement("td");
+          td.colSpan = 6;
+          td.style.textAlign = "center";
+          td.textContent = "📭 No pending requests";
+          tr.appendChild(td);
+          tbody.appendChild(tr);
+          return;
+        }
+
+        Object.entries(data).forEach(([username, req]) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${req.name}</td>
+            <td>${req.designation}</td>
+            <td>${req.phone}</td>
+            <td>${req.experience}</td>
+            <td><input type="text" value="${req.designation}" class="designation-input" /></td>
+            <td>
+              <button class="approve" data-username="${username}">Approve</button>
+              <button class="reject" data-username="${username}">Reject</button>
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
       });
     }
 
     document.addEventListener('click', function (e) {
       if (e.target.classList.contains('approve') || e.target.classList.contains('reject')) {
         const row = e.target.closest('tr');
-        const index = e.target.dataset.index;
-        const name = row.children[0].textContent.trim();
+        const username = e.target.dataset.username;
+        const newDesig = row.querySelector('input').value.trim();
 
-        if (e.target.classList.contains('approve')) {
-          const newDesig = row.querySelector('input').value.trim();
-          const approved = JSON.parse(localStorage.getItem("approvedMembers") || "[]");
+        db.ref("membershipRequests/" + username).once("value", snap => {
+          const req = snap.val();
 
-          const phone = row.children[2].textContent.trim();
-          const experience = row.children[3].textContent.trim();
+          if (e.target.classList.contains('approve')) {
+            db.ref("approvedMembers/" + username).set({
+              name: req.name,
+              designation: newDesig,
+              phone: req.phone,
+              experience: req.experience,
+              username: username,
+              image: req.image || "",
+            });
+            alert(${req.name} approved as ${newDesig});
+          } else {
+            alert(${req.name}'s request rejected.);
+          }
 
-          approved.push({
-            name: name,
-            designation: newDesig,
-            experience: experience,
-            phone: phone,
-          });
-
-          localStorage.setItem("approvedMembers", JSON.stringify(approved));
-          localStorage.setItem(name + "_notification", "Approved as ${newDesig}");
-          alert("${name} approved as ${newDesig}");
-        }
-
-        if (e.target.classList.contains('reject')) {
-          localStorage.setItem(name + "_notification", "Your request was rejected by Admin");
-          alert("${name}'s request rejected.");
-        }
-
-        pendingRequests.splice(index, 1);
-        localStorage.setItem("membershipRequests", JSON.stringify(pendingRequests));
-        location.reload();
+          db.ref("membershipRequests/" + username).remove();
+          location.reload();
+        });
       }
     });
-  </script>
-</body>
+
+    loadRequests();
+  </script></body>
 </html>
