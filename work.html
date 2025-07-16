@@ -80,44 +80,101 @@
     <a href="home.html" class="back-link">⬅ Back to Dashboard</a>
   </div>
 
-  <script>
-    const currentUser = localStorage.getItem("loggedInUsername");
-    const approvedMembers = JSON.parse(localStorage.getItem("approvedMembers") || "[]");
+  <!-- Firebase Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
-    const isApproved = approvedMembers.some(member => member.username === currentUser);
+ <script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCCx4QaXdzuUrZki39zJPZH9xXYUgmt2cY",
+    authDomain: "belcha-gang.firebaseapp.com",
+    databaseURL: "https://belcha-gang-default-rtdb.firebaseio.com",
+    projectId: "belcha-gang",
+    storageBucket: "belcha-gang.appspot.com",
+    messagingSenderId: "762357625552",
+    appId: "1:762357625552:web:8a47b837b19ea7ad0864d5"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+</script>
 
-    if (!currentUser || !isApproved) {
+<script>
+  const currentUser = localStorage.getItem("loggedInUsername");
+  const input = document.getElementById("workInput");
+  const logBox = document.getElementById("logBox");
+
+  // ✅ Approval Check
+  firebase.database().ref("approvedMembers").once("value").then(snapshot => {
+    const members = snapshot.val() || {};
+    const approved = Object.values(members).some(member => member.username === currentUser);
+    if (!approved) {
       alert("🚫 Aapka membership abhi tak approve nahi hua. Yeh page locked hai.");
       window.location.href = "home.html";
+    } else {
+      loadWork(); // Load if approved
     }
-  </script>
+  });
 
-  <script>
-    const input = document.getElementById("workInput");
-    const logBox = document.getElementById("logBox");
+  // ✅ Load Work from DB
+  function loadWork() {
+    db.ref("workData/" + currentUser).once("value").then(snapshot => {
+      const workList = snapshot.val() || [];
+      logBox.innerHTML = "<h4>Your Submitted Work:</h4>" + (
+        workList.map((w, i) => `
+          <div style="margin-bottom: 12px;">
+            📌 <span id="workText-${i}">${w.text}</span><br>
+            <button onclick="editWork(${i})">✏ Edit</button>
+            <button onclick="deleteWork(${i})">❌ Delete</button>
+          </div>
+        `).join("")
+      );
+    });
+  }
 
-    function loadWork() {
-      const workData = JSON.parse(localStorage.getItem("workData") || "{}");
-      const userWork = workData[currentUser] || [];
-      logBox.innerHTML = "<h4>Your Submitted Work:</h4>" + userWork.map(w => 📌 ${w}).join("<br>");
-    }
+  // ✅ Submit New Work
+  function submitWork() {
+    const workText = input.value.trim();
+    if (!workText) return;
 
-    function submitWork() {
-      const workText = input.value.trim();
-      if (!workText) return;
+    const userRef = db.ref("workData/" + currentUser);
+    userRef.once("value").then(snapshot => {
+      const oldWork = snapshot.val() || [];
+      oldWork.push({ text: workText, timestamp: Date.now() });
+      userRef.set(oldWork).then(() => {
+        input.value = "";
+        loadWork();
+      });
+    });
+  }
 
-      const workData = JSON.parse(localStorage.getItem("workData") || "{}");
-      if (!workData[currentUser]) {
-        workData[currentUser] = [];
-      }
+  // ✅ Delete Work by Index
+  function deleteWork(index) {
+    const userRef = db.ref("workData/" + currentUser);
+    userRef.once("value").then(snapshot => {
+      const workList = snapshot.val() || [];
+      workList.splice(index, 1);
+      userRef.set(workList).then(loadWork);
+    });
+  }
 
-      workData[currentUser].push(workText);
-      localStorage.setItem("workData", JSON.stringify(workData));
-      input.value = "";
-      loadWork();
-    }
+  // ✅ Edit Work by Index
+  function editWork(index) {
+    const span = document.getElementById(workText-${index});
+    const currentText = span.textContent;
 
-    window.onload = loadWork;
-  </script>
+    const newText = prompt("✏ Edit your work:", currentText);
+    if (newText === null || newText.trim() === "") return;
+
+    const userRef = db.ref("workData/" + currentUser);
+    userRef.once("value").then(snapshot => {
+      const workList = snapshot.val() || [];
+      workList[index].text = newText.trim();
+      userRef.set(workList).then(loadWork);
+    });
+  }
+
+  window.onload = () => loadWork();
+</script>
+  
 </body>
 </html>
