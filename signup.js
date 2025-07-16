@@ -9,11 +9,9 @@ function signup() {
     return;
   }
 
-  // ✅ FIXED Regex for strong password
   const strongPasswordRegex = /^.{6,}$/;
-
   if (!strongPasswordRegex.test(password)) {
-    alert("⚠ Password weak hai!\nUse at least:\n- 8 characters\n- 1 uppercase\n- 1 lowercase\n- 1 number\n- 1 special symbol (@#$%^&+=!)");
+    alert("⚠ Password weak hai!\nUse at least 6 characters.");
     return;
   }
 
@@ -22,15 +20,33 @@ function signup() {
     return;
   }
 
-  // ✅ Firebase Signup
+  // ✅ Step 1: Firebase Auth Signup
   firebase.auth().createUserWithEmailAndPassword(email, password)
     .then((userCredential) => {
-      localStorage.setItem("loggedInUsername",username);
-      localStorage.setItem("userPassword_" + username, password);
-      alert("✅ Account ban gaya! Ab login karo.");
-      window.location.href = "index.html";
+      const uid = userCredential.user.uid;
+
+      // ✅ Step 2: Save user data in Realtime Database
+      const userData = {
+        username: username,
+        password: password,
+        createdAt: Date.now(),
+        status: "pending",  // Default: not yet approved
+        profilePic: "",     // Will be set later
+        uid: uid
+      };
+
+      firebase.database().ref("users/" + username).set(userData)
+        .then(() => {
+          localStorage.setItem("loggedInUsername", username);
+          localStorage.setItem("userPassword_" + username, password);
+          alert("✅ Account ban gaya! Ab login karo.");
+          window.location.href = "index.html";
+        })
+        .catch((error) => {
+          alert("❌ Database error: " + error.message);
+        });
     })
     .catch((error) => {
-      alert("⚠ Error: " + error.message);
+      alert("⚠ Auth error: " + error.message);
     });
 }
