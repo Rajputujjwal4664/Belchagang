@@ -1,178 +1,199 @@
-<!DOCTYPE html><html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <title>Your Profile</title>
+  <meta charset="UTF-8" />
+  <title>👤 Profile - Belcha Gang</title>
   <style>
     body {
-      background-color: #121212;
+      background: #0f0f0f;
       color: white;
       font-family: 'Segoe UI', sans-serif;
+      padding: 40px;
       text-align: center;
+    }
+
+    .profile-container {
+      background: #1c1c1c;
       padding: 30px;
-    }.profile-box {
-  background: #1f1f1f;
-  padding: 30px;
-  max-width: 400px;
-  margin: auto;
-  border-radius: 12px;
-  box-shadow: 0 0 15px rgba(255,255,255,0.1);
-}
+      border-radius: 12px;
+      max-width: 500px;
+      margin: auto;
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+    }
 
-.profile-box img {
-  border-radius: 50%;
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
-  margin-bottom: 15px;
-}
+    .profile-container h2 {
+      color: crimson;
+      margin-bottom: 30px;
+    }
 
-input {
-  padding: 10px;
-  margin: 10px 0;
-  width: 80%;
-  border-radius: 8px;
-  border: none;
-  background-color: #333;
-  color: white;
-}
+    .profile-pic {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid crimson;
+      margin-bottom: 20px;
+    }
 
-button {
-  padding: 10px 20px;
-  background-color: #ff3c3c;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-}
+    .profile-field {
+      margin: 15px 0;
+      text-align: left;
+    }
 
-button:hover {
-  background-color: #e60000;
-}
+    .profile-field label {
+      display: block;
+      margin-bottom: 5px;
+      color: #ccc;
+    }
 
-.field-label {
-  font-weight: bold;
-  margin-top: 15px;
-  text-align: left;
-}
+    .profile-field input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #444;
+      background: #111;
+      color: white;
+      font-size: 16px;
+    }
 
-.password-wrapper {
-  position: relative;
-  display: inline-block;
-}
+    button {
+      margin-top: 25px;
+      background: crimson;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
 
-.password-wrapper input {
-  padding-right: 40px;
-}
+    button:hover {
+      background: darkred;
+    }
 
-.toggle-eye {
-  position: absolute;
-  right: 10px;
-  top: 10px;
-  cursor: pointer;
-  color: #ccc;
-}
-
-.back-button {
-  display: inline-block;
-  margin-top: 20px;
-  padding: 10px 20px;
-  background-color: #222;
-  color: #fff;
-  text-decoration: none;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  font-weight: bold;
-  box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
-}
-
-.back-button:hover {
-  background-color: crimson;
-  color: #000;
-  transform: scale(1.05);
-  box-shadow: 3px 3px 10px rgba(0,0,0,0.7);
-}
-
+    .back-btn {
+      display: inline-block;
+      margin-top: 30px;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
-  <div class="profile-box">
-    <h2>👤 Your Profile</h2><img id="profilePic" src="default.png" alt="Profile Picture">
-<br>
-<input type="file" id="picInput" accept="image/*"><br>
 
-<div class="field-label">Username (Not editable):</div>
-<input type="text" id="username" disabled>
+<div class="profile-container">
+  <h2>👤 Your Profile</h2>
+  <img id="profilePic" class="profile-pic" src="https://via.placeholder.com/120" alt="Profile Picture">
+  <br />
+  <input type="file" id="photoInput" accept="image/*" style="margin-bottom: 20px;">
 
-<div class="field-label">Password:</div>
-<div class="password-wrapper">
-  <input type="password" id="passwordField" disabled>
-  <span class="toggle-eye" onclick="togglePassword()">👁</span>
+  <div class="profile-field">
+    <label>Username:</label>
+    <input type="text" id="profileUsername" readonly>
+  </div>
+
+  <div class="profile-field">
+    <label>Password:</label>
+    <div style="display: flex; align-items: center;">
+      <input type="password" id="profilePassword" readonly style="flex: 1;">
+      <button type="button" onclick="togglePassword()" style="margin-left: 10px;">👁</button>
+    </div>
+  </div>
+
+  <div class="profile-field">
+    <label>Name:</label>
+    <input type="text" id="nameInput" placeholder="Enter your name">
+  </div>
+
+  <button onclick="updateProfile()">💾 Update Profile</button>
+  <br>
+  <a href="home.html" class="back-btn">🔙 Back to Dashboard</a>
 </div>
 
-<div class="field-label">Your Name:</div>
-<input type="text" id="nameInput" placeholder="Enter your name"><br>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCCx4QaXdzuUrZki39zJPZH9xXYUgmt2cY",
+    authDomain: "belcha-gang.firebaseapp.com",
+    databaseURL: "https://belcha-gang-default-rtdb.firebaseio.com/",
+    projectId: "belcha-gang",
+    storageBucket: "belcha-gang.appspot.com",
+    messagingSenderId: "762357625552",
+    appId: "1:762357625552:web:8a47b837b19ea7ad0864d5"
+  };
 
-<button onclick="saveProfile()">Save Profile</button>
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+</script>
 
-  </div><a href="home.html" class="back-button">⬅ Back to Home</a>
+<script>
+  const username = localStorage.getItem("loggedInUsername");
 
-  <!-- Firebase SDK -->  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCCx4QaXdzuUrZki39zJPZH9xXYUgmt2cY",
-      authDomain: "belcha-gang.firebaseapp.com",
-      databaseURL: "https://belcha-gang-default-rtdb.firebaseio.com/",
-      projectId: "belcha-gang",
-      storageBucket: "belcha-gang.firebasestorage.app",
-      messagingSenderId: "762357625552",
-      appId: "1:762357625552:web:8a47b837b19ea7ad0864d5"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    const currentUser = localStorage.getItem("loggedInUsername");
-    if (!currentUser) {
-      alert("Please login first.");
-      window.location.href = "index.html";
-    }
-
-    document.getElementById("username").value = currentUser;
-    const password = localStorage.getItem("userPassword_" + currentUser);
-    document.getElementById("passwordField").value = password || "";
-
-    const nameInput = document.getElementById("nameInput");
-    const profilePic = document.getElementById("profilePic");
-    const userRef = db.ref("membershipRequests/" + currentUser);
-
-    userRef.once("value").then(snapshot => {
-      const data = snapshot.val();
-      if (data) {
-        nameInput.value = data.name || "";
-        if (data.profilePic) {
-          profilePic.src = data.profilePic;
+  // Load user data
+  window.onload = () => {
+    db.ref("approvedMembers").once("value", snapshot => {
+      const members = snapshot.val() || {};
+      for (let key in members) {
+        const user = members[key];
+        if (user.username === username) {
+          document.getElementById("profileUsername").value = user.username || "";
+          document.getElementById("profilePassword").value = user.password || "";
+          document.getElementById("nameInput").value = user.name || "";
+          document.getElementById("profilePic").src = user.image || "https://via.placeholder.com/120";
+          break;
         }
       }
     });
+  };
 
-    document.getElementById("picInput").addEventListener("change", function (event) {
+  // Toggle Password visibility
+  function togglePassword() {
+    const input = document.getElementById("profilePassword");
+    input.type = input.type === "password" ? "text" : "password";
+  }
+
+  // Update profile data
+  function updateProfile() {
+    const name = document.getElementById("nameInput").value.trim();
+    const file = document.getElementById("photoInput").files[0];
+    const currentImage = document.getElementById("profilePic").src;
+
+    if (!name) return alert("⚠ Name cannot be empty!");
+
+    function save(imageData) {
+      db.ref("approvedMembers").once("value", snap => {
+        const members = snap.val() || {};
+        for (let key in members) {
+          if (members[key].username === username) {
+            db.ref("approvedMembers/" + key).update({
+              name: name,
+              image: imageData
+            }, error => {
+              if (error) {
+                alert("❌ Failed to update profile.");
+              } else {
+                alert("✅ Profile updated!");
+                location.reload();
+              }
+            });
+            break;
+          }
+        }
+      });
+    }
+
+    if (file) {
       const reader = new FileReader();
-      reader.onload = function () {
-        profilePic.src = reader.result;
-        userRef.update({ profilePic: reader.result });
-      };
-      reader.readAsDataURL(event.target.files[0]);
-    });
-
-    function togglePassword() {
-      const field = document.getElementById("passwordField");
-      field.type = field.type === "password" ? "text" : "password";
+      reader.onload = e => save(e.target.result);
+      reader.readAsDataURL(file);
+    } else {
+      save(currentImage);
     }
+  }
+</script>
 
-    function saveProfile() {
-      const name = nameInput.value.trim();
-      userRef.update({ name });
-      alert("Profile updated!");
-      window.location.href = "home.html";
-    }
-  </script></body>
+</body>
 </html>
