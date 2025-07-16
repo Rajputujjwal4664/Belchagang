@@ -39,6 +39,11 @@
       border-radius: 5px;
     }
 
+    input[type="file"] {
+      background-color: #fff;
+      color: #000;
+    }
+
     .submit-btn {
       background-color: #ff3c3c;
       color: white;
@@ -76,8 +81,10 @@
     <form id="membershipForm">
       <input type="text" id="name" placeholder="Your Name" required />
       <input type="text" id="designation" placeholder="Desired Designation" required />
-      <input type="tel" id="phone" placeholder="Phone Number" required />
+      <input type="tel" id="phone" placeholder="Phone Number" maxlength="10" pattern="[0-9]{10}" required />
       <input type="number" id="experience" placeholder="Experience (in years)" min="0" required />
+      <label>Upload Profile Photo:</label>
+      <input type="file" id="profilePic" accept="image/*" required />
 
       <button type="submit" class="submit-btn">Submit Request</button>
     </form>
@@ -89,51 +96,81 @@
     <a href="home.html" class="back-home">⬅ Back to Home</a>
   </div>
 
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCCx4QaXdzuUrZki39zJPZH9xXYUgmt2cY",
+      authDomain: "belcha-gang.firebaseapp.com",
+      databaseURL: "https://belcha-gang-default-rtdb.firebaseio.com/",
+      projectId: "belcha-gang",
+      storageBucket: "belcha-gang.firebasestorage.app",
+      messagingSenderId: "762357625552",
+      appId: "1:762357625552:web:8a47b837b19ea7ad0864d5"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const storage = firebase.storage();
+  </script>
+
   <script>
     const form = document.getElementById("membershipForm");
     const confirmationMsg = document.getElementById("confirmationMsg");
 
-    form.addEventListener("submit", function (e) {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
+      const username = localStorage.getItem("loggedInUsername");
       const name = document.getElementById("name").value.trim();
       const designation = document.getElementById("designation").value.trim();
       const phone = document.getElementById("phone").value.trim();
       const experience = document.getElementById("experience").value.trim();
-      const username = localStorage.getItem("loggedInUsername");
+      const profilePic = document.getElementById("profilePic").files[0];
 
-      if (!username) {
-        alert("❌ Please login first.");
-        return;
+      if (!username || !name || !designation || !phone || !experience || !profilePic) {
+  alert("❌ Please fill in all fields and upload a photo.");
+  return;
+}
+
+if (!/^\d{10}$/.test(phone)) {
+  alert("📱 Phone number must be exactly 10 digits.");
+  return;
+}
+      try {
+        // Upload profile picture
+        const picRef = storage.ref(profilePics/${username}_${Date.now()});
+        const snapshot = await picRef.put(profilePic);
+        const photoURL = await snapshot.ref.getDownloadURL();
+
+        // Prepare data
+        const requestData = {
+          username,
+          name,
+          designation,
+          phone,
+          experience,
+          profilePicURL: photoURL,
+          status: "pending",
+          timestamp: Date.now()
+        };
+
+        // Save to Firebase DB
+        await db.ref("membershipRequests").push(requestData);
+
+        confirmationMsg.style.display = "block";
+        form.reset();
+
+        setTimeout(() => {
+          window.location.href = "home.html";
+        }, 2000);
+      } catch (error) {
+        console.error("❌ Upload Error:", error);
+        alert("Error submitting request. Try again.");
       }
-
-      if (!name || !designation || !phone || !experience) {
-        alert("⚠ Please fill all fields.");
-        return;
-      }
-
-      const requestData = {
-        username,
-        name,
-        designation,
-        phone,
-        experience,
-        status: "pending",
-        timestamp: Date.now()
-      };
-
-      const oldRequests = JSON.parse(localStorage.getItem("membershipRequests") || "[]");
-      oldRequests.push(requestData);
-      localStorage.setItem("membershipRequests", JSON.stringify(oldRequests));
-
-      // Set notification + success message
-      localStorage.setItem(username + "_notification", "✅ Membership request submitted. Wait for admin approval.");
-      confirmationMsg.style.display = "block";
-      form.reset();
-
-      setTimeout(() => {
-        window.location.href = "home.html";
-      }, 2000);
     });
   </script>
 </body>
