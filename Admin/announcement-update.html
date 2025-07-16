@@ -71,19 +71,42 @@
   <br>
   <a href="admin.html" class="back-btn">🔙 Back to Admin Panel</a>
 
+  <!-- Firebase Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <script>
+    // 🔧 Your Firebase Config Here
+    const firebaseConfig = {
+      apiKey: "AIzaSyCCx4QaXdzuUrZki39zJPZH9xXYUgmt2cY",
+      authDomain: "belcha-gang.firebaseapp.com",
+      databaseURL: "https://belcha-gang-default-rtdb.firebaseio.com/",
+      projectId: "belcha-gang",
+      storageBucket: "belcha-gang.firebasestorage.app",
+      messagingSenderId: "762357625552",
+      appId: "1:762357625552:web:8a47b837b19ea7ad0864d5"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
     function saveAnnouncement() {
       const input = document.getElementById("announcementInput").value.trim();
       const announcements = input.split("\n").filter(line => line.trim() !== "");
-      localStorage.setItem("announcementData", JSON.stringify(announcements));
-      alert("✅ Announcements saved successfully!");
+      db.ref("announcementData").set(announcements)
+        .then(() => alert("✅ Announcements saved to Firebase!"))
+        .catch(error => alert("❌ Error: " + error));
     }
 
     window.onload = function () {
-      const saved = JSON.parse(localStorage.getItem("announcementData") || "[]");
-      if (saved.length > 0) {
-        document.getElementById("announcementInput").value = saved.join("\n");
-      }
+      db.ref("announcementData").once("value")
+        .then(snapshot => {
+          const data = snapshot.val();
+          if (data && Array.isArray(data)) {
+            document.getElementById("announcementInput").value = data.join("\n");
+          }
+        })
+        .catch(error => console.error("❌ Error loading announcements:", error));
     };
   </script>
 
