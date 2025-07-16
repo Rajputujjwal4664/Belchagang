@@ -89,34 +89,57 @@
 
   <a href="admin.html" class="back-btn">🔙 Back to Admin Panel</a>
 
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <script>
-    const members = JSON.parse(localStorage.getItem("approvedMembers") || "[]");
-    const select = document.getElementById("memberSelect");
+    const firebaseConfig = {
+     apiKey: "AIzaSyCCx4QaXdzuUrZki39zJPZH9xXYUgmt2cY",
+      authDomain: "belcha-gang.firebaseapp.com",
+      databaseURL: "https://belcha-gang-default-rtdb.firebaseio.com/",
+      projectId: "belcha-gang",
+      storageBucket: "belcha-gang.firebasestorage.app",
+      messagingSenderId: "762357625552",
+      appId: "1:762357625552:web:8a47b837b19ea7ad0864d5"
+    };
 
-    members.forEach((m, i) => {
-      const opt = document.createElement("option");
-      opt.value = i;
-      opt.text = `${m.name} - ${m.designation}`;
-      select.appendChild(opt);
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const memberSelect = document.getElementById("memberSelect");
+    const members = [];
+
+    // Load approved members from Firebase
+    db.ref("approvedMembers").once("value").then(snapshot => {
+      const data = snapshot.val();
+      if (!data) return;
+      Object.keys(data).forEach(key => {
+        const m = data[key];
+        members.push(m);
+        const opt = document.createElement("option");
+        opt.value = members.length - 1;
+        opt.text = ${m.name} - ${m.designation};
+        memberSelect.appendChild(opt);
+      });
     });
 
     function previewMember() {
-      const index = select.value;
+      const index = memberSelect.value;
       if (index === "") return;
       const member = members[index];
-
-      document.getElementById("previewImg").src = member.image;
+      document.getElementById("previewImg").src = member.image || "https://via.placeholder.com/100";
       document.getElementById("previewName").innerText = member.name;
-      document.getElementById("previewDesig").innerText = `Designation: ${member.designation}`;
+      document.getElementById("previewDesig").innerText = Designation: ${member.designation};
       document.getElementById("memberPreview").style.display = "block";
     }
 
     function saveBestMember() {
-      const index = select.value;
-      if (index === "") return alert("⚠ Please select a member first.");
-      const member = members[index];
-      localStorage.setItem("bestGangMember", JSON.stringify(member));
-      alert("🎉 Best Gang Member updated!");
+      const index = memberSelect.value;
+      if (index === "") return alert("⚠ Please select a member.");
+      const selected = members[index];
+      db.ref("bestGangMember").set(selected)
+        .then(() => alert("🎉 Best Gang Member updated in Firebase!"))
+        .catch(err => alert("❌ Error saving: " + err));
     }
   </script>
 
