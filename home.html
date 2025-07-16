@@ -5,21 +5,36 @@
   <title>Belcha Gang Dashboard</title>
   <link rel="stylesheet" href="home.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCCx4QaXdzuUrZki39zJPZH9xXYUgmt2cY",
+  <!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCCx4QaXdzuUrZki39zJPZH9xXYUgmt2cY",
       authDomain: "belcha-gang.firebaseapp.com",
-      databaseURL: "https://belcha-gang-default-rtdb.firebaseio.com",
+      databaseURL: "https://belcha-gang-default-rtdb.firebaseio.com/",
       projectId: "belcha-gang",
-      storageBucket: "belcha-gang.appspot.com",
+      storageBucket: "belcha-gang.firebasestorage.app",
       messagingSenderId: "762357625552",
       appId: "1:762357625552:web:8a47b837b19ea7ad0864d5"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-  </script>
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  // Load Announcements
+  const annBox = document.getElementById("announcementBox"); // Use correct ID from your HTML
+  const annRef = db.ref("announcementData");
+
+  annRef.on("value", snapshot => {
+    const data = snapshot.val();
+    if (data && Array.isArray(data)) {
+      annBox.innerHTML = data.map(text => <li>📢 ${text}</li>).join("");
+    } else {
+      annBox.innerHTML = "<li>No announcements yet.</li>";
+    }
+  });
+</script>
 </head>
 <body>
   <!-- Navbar -->
