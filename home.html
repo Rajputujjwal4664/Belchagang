@@ -5,87 +5,24 @@
   <title>Belcha Gang Dashboard</title>
   <link rel="stylesheet" href="home.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-  <style>
-    .section-highlight {
-  background: #111; /* solid dark background */
-  border-left: 5px solid crimson;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 0 10px rgba(255, 0, 0, 0.4);
-  color: white;
-}
-    .announcement-section {
-      width: 45%;
-      background: #1a1a1a;
-      border-left: 5px solid crimson;
-      padding: 20px;
-      height: 250px;
-      overflow: hidden;
-      position: relative;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
-    }
-.announcement-title {
-  font-size: 20px;
-  font-weight: bold;
-  color: #fff;
-  margin-bottom: 10px;
-}
-
-.announcement-scroll {
-  position: absolute;
-  animation: scroll-up 10s linear infinite;
-  color: #eee;
-}
-
-@keyframes scroll-up {
-  0% { top: 100%; }
-  100% { top: -100%; }
-}
-
-.quote-box {
-  text-align: center;
-  font-size: 22px;
-  font-style: italic;
-  margin: 40px 0 20px;
-  color: #f4f4f4;
-  animation: fadeIn 2s ease-in-out;
-}
-
-@keyframes fadeIn {
-  0% { opacity: 0; transform: translateY(20px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-
-.highlight-section, .date-quote-section {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 30px;
-  padding: 0 20px;
-}
-
-.date-quote-box {
-  width: 45%;
-  background: #1a1a1a;
-  padding: 20px;
-  border-radius: 10px;
-  color: #ccc;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-}
-
-.about-us {
-  margin: 40px auto;
-  padding: 20px;
-  max-width: 800px;
-  background: #111;
-  border-left: 5px solid crimson;
-  color: white;
-  border-radius: 8px;
-}
-
-  </style>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCCx4QaXdzuUrZki39zJPZH9xXYUgmt2cY",
+      authDomain: "belcha-gang.firebaseapp.com",
+      databaseURL: "https://belcha-gang-default-rtdb.firebaseio.com",
+      projectId: "belcha-gang",
+      storageBucket: "belcha-gang.appspot.com",
+      messagingSenderId: "762357625552",
+      appId: "1:762357625552:web:8a47b837b19ea7ad0864d5"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+  </script>
 </head>
 <body>
+  <!-- Navbar -->
   <div class="navbar">
     <div class="navbar-header">
       <h1>Belcha Gang Dashboard</h1>
@@ -98,265 +35,123 @@
       <a href="request.html">Request Membership</a>
     </div>
     <div class="navbar-right" style="position: absolute; top: 20px; right: 90px; display: flex; align-items: center;">
-  <a href="index.html" class="logout-btn">Logout</a>
-  </div>
-</div>
-  </div>  <div class="slider-section">
+      <a href="index.html" class="logout-btn">Logout</a>
+    </div>
+  </div>  <!-- Slider -->  <div class="slider-section">
     <div class="swiper mySwiper">
-      <div class="swiper-wrapper" id="sliderWrapper">
-        <!-- Approved members will appear here -->
-      </div>
+      <div class="swiper-wrapper" id="sliderWrapper"></div>
       <div class="swiper-pagination"></div>
     </div>
-  </div><!-- 🎉 Welcome Banner -->
-<div style="text-align: center; margin-top: 30px;">
-  <h2 style="font-size: 30px; color: crimson; animation: bounce 2s infinite;">🔥 Welcome to Belcha Gang! 🔥</h2>
-</div>
-
-<!-- ✨ Animated Quote -->
-<div style="text-align: center; margin: 20px auto; font-size: 18px; font-style: italic; color: #f5f5f5;">
-  <marquee behavior="alternate" scrollamount="4" style="width: 80%; color: #00FF00; font-weight: bold;">
-    "Unity is our strength, Belcha is our weapon 💪"
-  </marquee>
-</div>
-
-<!-- 📢 Announcements + 📅 Date/Quote - Full Width Block -->
-<div style="display: flex; justify-content: space-between; gap: 20px; margin: 30px auto; max-width: 95%;">
-  <!-- Announcement Block -->
-  <div class="section-highlight" style="flex: 1; position:relative;">
-    <h3 style="position: absolute; top: 10px; left: 20px; color: crimson;">📢 Announcements</h3>
-    <div style="margin-top: 40px; height: 120px; overflow: hidden; position: relative;">
-      <div class="announcement-scroll" id="announcementBox">
+  </div>  <!-- Welcome Message -->  <div style="text-align: center; margin-top: 30px;">
+    <h2 style="font-size: 30px; color: crimson; animation: bounce 2s infinite;">🔥 Welcome to Belcha Gang! 🔥</h2>
+  </div>  <!-- Quote -->  <div style="text-align: center; margin: 20px auto; font-size: 18px; font-style: italic; color: #f5f5f5;">
+    <marquee behavior="alternate" scrollamount="4" style="width: 80%; color: #00FF00; font-weight: bold;">
+      "Unity is our strength, Belcha is our weapon 💪"
+    </marquee>
+  </div>  <!-- Announcements & Thought -->  <div style="display: flex; justify-content: space-between; gap: 20px; margin: 30px auto; max-width: 95%;">
+    <div class="section-highlight" style="flex: 1; position:relative;">
+      <h3 style="position: absolute; top: 10px; left: 20px; color: crimson;">📢 Announcements</h3>
+      <div style="margin-top: 40px; height: 120px; overflow: hidden; position: relative;">
+        <div class="announcement-scroll" id="announcementBox"></div>
       </div>
     </div>
-  </div>
-
-  <!-- Date + Quote Block -->
-  <div class="section-highlight" style="flex: 1;">
-    <h3 style="color: crimson;">📅 Today: <span id="todayDate"></span></h3>
-    <p id="thoughtBox" style="margin-top: 20px;">🧠 Thought: "Hard work and loyalty build unbreakable gangs."</p>
-  </div>
-</div>
-
-<!-- 🏆 Best Gang Member of the Month -->
-<div style="margin: 40px auto; max-width: 95%; text-align: center;">
-  <h2 style="color: gold;">🏆 Best Gang Member of the Month</h2>
-  <div class="best-member-container">
-    <div class="best-member-photo">
-      <a id="profileLink" href="#">
-        <img id="bestImg" src="https://via.placeholder.com/150" alt="Best Member" style="width:200px; height: 200px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 10px rgba(255,255,255,0.4);"/>
-      </a>
+    <div class="section-highlight" style="flex: 1;">
+      <h3 style="color: crimson;">📅 Today: <span id="todayDate"></span></h3>
+      <p id="thoughtBox" style="margin-top: 20px;">🧠 Thought: "..."</p>
     </div>
-    <div class="best-member-details">
-      <h3 id="bestName"></h3>
-      <p id="bestDesignation"></p>
-      <p id="bestReason"></p>
+  </div>  <!-- Best Member -->  <div style="margin: 40px auto; max-width: 95%; text-align: center;">
+    <h2 style="color: gold;">🏆 Best Gang Member of the Month</h2>
+    <div class="best-member-container">
+      <div class="best-member-photo">
+        <a id="profileLink" href="#">
+          <img id="bestImg" src="https://via.placeholder.com/150" alt="Best Member" style="width:200px; height: 200px; border-radius: 50%; object-fit: cover;"/>
+        </a>
+      </div>
+      <div class="best-member-details">
+        <h3 id="bestName"></h3>
+        <p id="bestDesignation"></p>
+        <p id="bestReason"></p>
+      </div>
     </div>
-  </div>
-</div>
-
-<!-- 🖼 Belcha Gang Gallery -->
-<div style="margin: 40px auto; max-width: 95%;">
-  <h2 style="text-align: center; color: #00ffff;">📷 Belcha Gang Gallery</h2>
-  <div id="galleryContainer" class="gallery-section" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-top: 20px;">
-  <imgsrc="https://via.placeholder.com/200"/>
-    <!-- Gallery images will be injected here -->
-  </div>
-</div>
-
-  </div>  <div class="about-us">
+  </div>  <!-- Gallery -->  <div style="margin: 40px auto; max-width: 95%;">
+    <h2 style="text-align: center; color: #00ffff;">📷 Belcha Gang Gallery</h2>
+    <div id="galleryContainer" class="gallery-section" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-top: 20px;"></div>
+  </div>  <!-- About Us -->  <div class="about-us">
     <h2>About Us</h2>
-    <p>We are the Belcha Gang – a passionate, united, and powerful brotherhood committed to teamwork, trust, and building amazing things together. We believe in growth, fun, and loyalty. 💪🔥</p>
-  </div>  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>  <script>
-    const approved = JSON.parse(localStorage.getItem("approvedMembers") || "[]");
-    const wrapper = document.getElementById("sliderWrapper");
-    approved.forEach(member => {
-      const slide = document.createElement("div");
-      slide.classList.add("swiper-slide");
-      slide.innerHTML = `
-        <img src="${member.image}" alt="${member.name}" />
-        <h3>${member.name} - ${member.designation}</h3>
-      `;
-      wrapper.appendChild(slide);
+    <p>We are the Belcha Gang – a passionate, united, and powerful brotherhood committed to teamwork, trust, and building amazing things together.</p>
+  </div>  <!-- SwiperJS -->  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>  <script>
+    const currentUser = localStorage.getItem("loggedInUsername");
+
+    const today = new Date();
+    document.getElementById("todayDate").innerText = ${String(today.getDate()).padStart(2,'0')}/${String(today.getMonth()+1).padStart(2,'0')}/${today.getFullYear()};
+
+    db.ref('announcements').on('value', snap => {
+      const box = document.getElementById("announcementBox");
+      const data = snap.val() || [];
+      box.innerHTML = data.map(a => <p>➡ ${a}</p>).join('');
     });
 
-    const swiper = new Swiper(".mySwiper", {
-      slidesPerView: 1,
-      spaceBetween: 30,
-      loop: approved.length >= 3,
-      autoplay: {
-        delay: 2500,
-        disableOnInteraction: false,
-      },
-      pagination: {
-        el: ".swiper-pagination",
-        clickable: true,
-      },
-      breakpoints: {
-        768: { slidesPerView: 2 },
-        1024: { slidesPerView: 3 }
-      },
+    db.ref('thoughtOfTheDay').on('value', snap => {
+      document.getElementById("thoughtBox").innerText = "🧠 Thought: " + (snap.val() || "No thought today.");
     });
 
-    setTimeout(() => {
-      swiper.update();
-      swiper.autoplay.start();
-    }, 500);
-  </script>  <script>
-    const loggedInUser = localStorage.getItem("loggedInUsername");
-    const notify = localStorage.getItem(loggedInUser + "_notification");
-    if (notify) {
-      alert(notify);
-      localStorage.removeItem(loggedInUser + "_notification");
-    }
-  </script>
-    <script>
-  const today = new Date();
-  const dd = String(today.getDate()).padStart(2, '0');
-  const mm = String(today.getMonth() + 1).padStart(2, '0');
-  const yyyy = today.getFullYear();
-  document.getElementById("todayDate").innerText = `${dd}/${mm}/${yyyy}`;
-</script>
-<script>
-  // Load announcements from localStorage and insert into announcementBox
-  const announcementData = JSON.parse(localStorage.getItem("announcementData") || "[]");
-  const box = document.getElementById("announcementBox");
-
-  if (announcementData.length === 0) {
-    box.innerHTML = "<p>📭 No announcements yet.</p>";
-  } else {
-    box.innerHTML = announcementData.map(line => `<p>➡ ${line}</p>`).join("");
-  }
-</script>
-<script>
-  const savedThought = localStorage.getItem("thoughtOfTheDay");
-  if (savedThought) {
-    const thoughtPara = document.getElementById("thoughtBox");
-    if (thoughtPara) {
-      thoughtPara.textContent = "🧠 Thought: " + savedThought;
-    }
-  }
-</script>
-<script>
-  const best = JSON.parse(localStorage.getItem("bestGangMember") || "null");
-  if (best) {
-    document.getElementById("bestImg").src = best.image || "https://via.placeholder.com/150";
-    document.getElementById("bestName").innerText = `🔥 ${best.name}`;
-    document.getElementById("bestDesignation").innerText = `Designation: ${best.designation}`;
-    document.getElementById("bestReason").innerText = `For: ${best.reason || "Outstanding contribution!"}`;
-
-    // Set profile link if you have individual profile pages
-    const profileLink = "profile.html?user=" + encodeURIComponent(best.username || best.name);
-    document.getElementById("profileLink").href = profileLink;
-  }
-</script>
-<script>
-  const galleryImages = JSON.parse(localStorage.getItem("belchaGallery") || "[]");
-  const galleryContainer = document.getElementById("galleryContainer");
-
-  if (galleryImages.length === 0) {
-    galleryContainer.innerHTML = "<p style='color:white;'>📭 No gallery images available.</p>";
-  } else {
-    galleryImages.forEach(url => {
-      const img = document.createElement("img");
-      img.src = url;
-      img.style.borderRadius = "10px";
-      img.style.width = "200px";
-      img.style.height = "auto";
-      img.style.cursor = "pointer";
-      img.addEventListener("click", () => {
-        document.getElementById('modalImage').src = url;
-        document.getElementById('galleryModal').style.display = 'flex';
-      });
-      galleryContainer.appendChild(img);
-    });
-  }
-</script>
-<!-- 🔍 Modal for image preview -->
-<div id="galleryModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color: rgba(0,0,0,0.85); justify-content:center; align-items:center; z-index:1000; flex-direction: column;">
-  <span id="closeModalBtn" style="position: absolute; top: 20px; right: 30px; font-size: 40px; font-weight: bold; color: white; cursor: pointer;">&times;</span>
-  <img id="modalImage" src="" style="max-width: 90%; max-height: 90%; border-radius: 10px; box-shadow: 0 0 20px rgba(255,255,255,0.3);" />
-</div>
-<script>
-  // Modal controls
-  window.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('closeModalBtn').addEventListener('click', () => {
-      document.getElementById('galleryModal').style.display = 'none';
-    });
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === "Escape") {
-        document.getElementById('galleryModal').style.display = 'none';
+    db.ref('bestGangMember').on('value', snap => {
+      const d = snap.val();
+      if (d) {
+        document.getElementById("bestImg").src = d.image;
+        document.getElementById("bestName").innerText = 🔥 ${d.name};
+        document.getElementById("bestDesignation").innerText = Designation: ${d.designation};
+        document.getElementById("bestReason").innerText = For: ${d.reason};
+        document.getElementById("profileLink").href = profile.html?user=${d.username};
       }
     });
-  });
-</script>
-  <!-- 🔥 Profile Icon (Top Right Fixed) -->
-<div id="userAvatar" onclick="window.location.href='profile.html'" style="
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  overflow: hidden;
-  cursor: pointer;
-  border: 2px solid white;
-  box-shadow: 0 0 8px rgba(0,0,0,0.6);
-  transition: all 0.3s ease;
-">
-  <img id="avatarImg" src="default.jpg" style="width: 100%; height: 100%; object-fit: cover;">
-</div>
 
-<!-- 🧠 Profile Image Script -->
-<script>
-  const currentUser = localStorage.getItem("loggedInUsername");
-  const profile = JSON.parse(localStorage.getItem("userProfile_" + currentUser)) || {};
-  const avatarImg = document.getElementById("avatarImg");
-  avatarImg.src = profile.image || "default.jpg";
-</script>
+    db.ref('approvedMembers').on('value', snap => {
+      const data = snap.val() || {};
+      const members = Object.values(data);
+      const wrapper = document.getElementById("sliderWrapper");
+      wrapper.innerHTML = "";
+      members.forEach(m => {
+        const slide = document.createElement("div");
+        slide.classList.add("swiper-slide");
+        slide.innerHTML = <img src="${m.image}" /><h3>${m.name} - ${m.designation}</h3>;
+        wrapper.appendChild(slide);
+      });
+      const swiper = new Swiper(".mySwiper", {
+        slidesPerView: 1,
+        spaceBetween: 30,
+        loop: members.length >= 3,
+        autoplay: { delay: 2500, disableOnInteraction: false },
+        pagination: { el: ".swiper-pagination", clickable: true },
+        breakpoints: { 768: { slidesPerView: 2 }, 1024: { slidesPerView: 3 } },
+      });
+    });
 
-<!-- 💅 Hover Effect Style -->
-<style>
-  #userAvatar:hover {
-    transform: scale(1.1);
-    border-color: crimson;
-    box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
-  }
-</style>
-  <script>
-  const currentUser = localStorage.getItem("loggedInUsername");
-  const approvedList = JSON.parse(localStorage.getItem("approvedMembers") || "[]");
+    db.ref('gallery').on('value', snap => {
+      const gallery = snap.val() || [];
+      const cont = document.getElementById("galleryContainer");
+      cont.innerHTML = "";
+      gallery.forEach(url => {
+        const img = document.createElement("img");
+        img.src = url;
+        img.style = "border-radius:10px; width:200px; height:auto; cursor:pointer;";
+        cont.appendChild(img);
+      });
+    });
 
-  // Check if current user is in approvedMembers
-  const isApproved = approvedList.some(member => member.username === currentUser);
-
-  if (!isApproved) {
-    // Disable links to locked pages
-    const restrictedLinks = ["attendance.html", "work.html", "chat.html"];
-    document.querySelectorAll("a").forEach(link => {
-      const href = link.getAttribute("href");
-      if (restrictedLinks.includes(href)) {
-        link.addEventListener("click", function (e) {
-          e.preventDefault();
-          alert("🚫 Aapka membership abhi tak approve nahi hua. Yeh feature locked hai.");
+    db.ref('approvedMembers').once('value').then(snap => {
+      const approved = Object.values(snap.val() || {});
+      const isApproved = approved.some(m => m.username === currentUser);
+      if (!isApproved) {
+        ["attendance.html", "work.html", "chat.html"].forEach(href => {
+          document.querySelectorAll(a[href='${href}']).forEach(link => {
+            link.addEventListener('click', e => {
+              e.preventDefault();
+              alert("🚫 Aapka membership abhi tak approve nahi hua.");
+            });
+          });
         });
       }
     });
-
-    // Optional: Show warning on top of page
-    const warning = document.createElement("div");
-    warning.textContent = "🔒 Your membership is not approved yet. Attendance, Work & Chat are locked.";
-    warning.style.background = "#330000";
-    warning.style.color = "white";
-    warning.style.textAlign = "center";
-    warning.style.padding = "10px";
-    warning.style.fontWeight = "bold";
-    warning.style.position = "sticky";
-    warning.style.top = "0";
-    warning.style.zIndex = "9999";
-    document.body.prepend(warning);
-  }
-</script>
-</body>
+  </script></body>
 </html>
