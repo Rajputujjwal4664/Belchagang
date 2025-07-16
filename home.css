@@ -286,3 +286,14 @@ body {
   transform: scale(1.1);
   box-shadow: 0 0 8px crimson;
 }
+.about-us {
+  background: #1e1e1e;
+  color: white;
+  padding: 30px;
+  margin: 60px auto;
+  border-radius: 12px;
+  max-width: 1000px;
+  text-align: center;
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.4); /* 🔥 Red glow */
+  transition: box-shadow 0.3s ease;
+}
